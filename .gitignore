@@ -1,0 +1,9 @@
+*.zip
+*.tar.gz
+*.tar
+*.png
+*.jpg
+*.pyc
+__pycache__
+log
+image

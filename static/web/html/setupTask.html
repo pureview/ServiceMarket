@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../style/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../style/icon.css">
+    <link rel="stylesheet" type="text/css" href="../style/base.css">
+    <title>创建任务</title>
+    <style>
+        .myButton{
+            background: #5ac1f3;
+            color: #fff;
+            width: 8rem;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            border: 1px solid #5ac1f3;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div style="margin-bottom:20px">
+            <div>请选择店铺：</div>
+            <input class="easyui-combobox"
+                   name="language"
+                   data-options="
+                        url:'',
+                        method:'get',
+                        valueField:'id',
+                        textField:'text',
+                        panelHeight:'auto'
+                " style="width:50%;height:32px">
+        </div>
+        <div style="margin-bottom: 20px">
+            <div>上传图片：</div>
+            <input class="easyui-filebox" accept="image/*" name="file1" data-options="prompt:'请选择图片...'" style="width:50%;height:32px">
+        </div>
+        <div style="margin-bottom: 20px">
+            <div>关键词：</div>
+            <input class="easyui-textbox" style="width:50%;height:32px">
+        </div>
+        <div style="margin-bottom: 20px">
+            <div>排序方式：</div>
+            <select class="easyui-combobox" name="state" style="width:50%;height:32px"></select>
+        </div>
+        <div style="margin-bottom: 20px">
+            <div>价格区间：</div>
+            <input class="easyui-numberbox" style="width:20%;height:32px" data-options="precision:2,groupSeparator:','"> ~
+            <input class="easyui-numberbox" style="width:20%;height:32px" data-options="precision:2,groupSeparator:','">
+        </div>
+        <div style="margin-bottom: 20px">
+            <div>付款方式：</div>
+            <select class="easyui-combobox" name="state" style="width:50%;height:32px"></select>
+        </div>
+        <div style="margin-bottom: 20px">
+            <div>具体商品金额：</div>
+            <input class="easyui-numberbox" style="width:50%;height:32px" data-options="precision:2,groupSeparator:','">
+        </div>
+        <div style="margin-bottom: 20px">
+            <div>商品全名：</div>
+            <input class="easyui-textbox" style="width:50%;height:32px">
+        </div>
+        <div style="text-align: center;margin-bottom: 20px">
+            <button class="myButton">创建任务</button>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+
+</script>
+</html>

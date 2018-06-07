@@ -1,0 +1,60 @@
+CREATE TABLE `user` (
+  `id` varchar(30) NOT NULL,
+  `wechat_id` varchar(50) DEFAULT NULL,
+  `inviter_id` varchar(30) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
+  `gender` varchar(2) DEFAULT NULL,
+  `wangwang` varchar(30) DEFAULT NULL,
+  `create_date` date DEFAULT NULL,
+  `role` int(11) DEFAULT NULL,
+  `trading_image` text,
+  `blacklist` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+CREATE TABLE `user_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '订单id',
+  `mission_id` int(11) DEFAULT NULL COMMENT '任务ID',
+  `username` varchar(30) DEFAULT NULL COMMENT '用户名',
+  `accept_time` varchar(30) DEFAULT NULL COMMENT '接受任务时间',
+  `finish_time` varchar(30) DEFAULT NULL COMMENT '任务结束时间',
+  `reason` varchar(100) DEFAULT NULL COMMENT '任务结束原因',
+  `succes` tinyint(4) DEFAULT '0' COMMENT '任务是否成功',
+  `status` varchar(30) DEFAULT NULL COMMENT '当前状态',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户订单' 
+
+CREATE TABLE `seller` (
+  `username` varchar(30) NOT NULL,
+  `passwd` varchar(20) NOT NULL,
+  `create_date` date DEFAULT NULL,
+  `shops` text,
+  `mail` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+CREATE TABLE `mission_class` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '任务类别id',
+  `seller_username` varchar(30) DEFAULT NULL COMMENT '卖家用户名',
+  `keyword` varchar(100) DEFAULT NULL COMMENT '卖家设定的任务关键词',
+  `sort` varchar(20) DEFAULT NULL COMMENT '排序方式',
+  `task_image` varchar(200) DEFAULT NULL COMMENT '任务图片',
+  `status` tinyint(4) DEFAULT '0' COMMENT '0未发布，1已发布，2已结束',
+  `price` varchar(100) DEFAULT NULL COMMENT '价格区间',
+  `pay_method` varchar(20) DEFAULT NULL COMMENT '付款方式',
+  `good_name` varchar(100) DEFAULT NULL COMMENT '商品名称',
+  `goods_price` int(11) DEFAULT '0' COMMENT '商品价格',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='任务类别'
+
+ CREATE TABLE `mission_object` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '发布任务id',
+  `mission_class` int(11) DEFAULT NULL COMMENT '对应的任务类别',
+  `status` tinyint(4) DEFAULT '0' COMMENT '0已发布 1已取消 2已结束',
+  `begin_time` varchar(30) DEFAULT NULL COMMENT '开始时间',
+  `end_time` varchar(30) DEFAULT NULL COMMENT '结束时间',
+  `master_money` varchar(20) DEFAULT '0' COMMENT '师傅佣金',
+  `slave_money` varchar(20) DEFAULT '0' COMMENT '徒弟佣金',
+  `allow` int(11) DEFAULT '0' COMMENT '0全部 1师傅 2徒弟',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='发布的任务' 
