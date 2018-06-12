@@ -75,7 +75,7 @@
         var data = {};
         data["code"] = "13";
         data["wechat_id"] = window.localStorage.getItem("openID");
-        data["seller_username"] = window.localStorage.getItem("username");
+        data["seller_username"] = window.localStorage.getItem("seller_username");
         console.log(data);
         $.ajax({
             url: url,
@@ -115,7 +115,7 @@
         data["code"] = "17";
         data["op"] = "0";
         data["wechat_id"] = window.localStorage.getItem("openID");
-        data["seller_username"] = window.localStorage.getItem("username");
+        data["seller_username"] = window.localStorage.getItem("seller_username");
         $.ajax({
             url: url,
             type: 'post',
@@ -139,7 +139,7 @@
         data["code"] = "17";
         data["op"] = "1";
         data["wechat_id"] = window.localStorage.getItem("openID");
-        data["seller_username"] = window.localStorage.getItem("username");
+        data["seller_username"] = window.localStorage.getItem("seller_username");
         data["money"] = $("#money").val();
         $.ajax({
             url: url,

@@ -55,6 +55,7 @@ class MissionHandler(tornado.web.RequestHandler):
         code=self.get_argument('code')
         seller_username=self.get_argument('seller_username','test_seller')
         helper=DBHelper()
+        print(self.request.body)
         if code=='0':
             # 插入新的任务类别
             if seller_username=='':
@@ -685,7 +686,7 @@ class MissionHandler(tornado.web.RequestHandler):
             now=datetime.datetime.now()
             cur_hour,cur_minute=now.hour,now.minute
             if cur_hour<int(cash_begin_hour) or cur_hour>int(cash_end_hour):
-                self.reply();return
+                self.reply(ret);return
             if (cur_hour==int(cash_begin_hour) and cur_minute<int(cash_begin_minute)) or \
                     (cur_hour==int(cash_end_hour) and cur_minute>int(cash_end_minute)):
                 self.reply();return
@@ -1084,7 +1085,109 @@ class MissionHandler(tornado.web.RequestHandler):
             username=self.get_username()
             statement='update user set role="-1" where id="%s"'%(username)
             ret['code']=helper.commit(statement)
-
+        elif code=='35':
+            '''
+            获取用户任务列表
+            '''
+            print(self.request.body)
+            username=self.get_username()
+            # Sift is used to select order status, -1 for all
+            sift=self.get_argument('sift',-1)
+            if int(sift)==-1:
+                statement='select id, mission_id,username,accept_time,finish_time,status,order_id,reason '+\
+                    ',wangwang,keyword,good_name,begin_time,end_time,master_money,slave_money,shop,good_price'+\
+                    ' from user_order where seller_username="%s"  and username="%s" order by cast(accept_time as decimal) desc'\
+                    %(seller_username,username)
+            else:
+                statement='select id,mission_id,username,accept_time,finish_time,status,order_id,reason '+\
+                    ',wangwang,keyword,good_name,begin_time,end_time,master_money,slave_money,shop,good_price'+\
+                    ' from user_order where seller_username="%s" and status="%s" and username="%s" order by cast(accept_time as decimal) desc'\
+                    %(seller_username,str(sift),username)
+            res=helper.query(statement)
+            ret['data']=[]
+            for row in res:
+                user_order_id,mission_id,username,accept_time,finish_time,status,order_id,reason,\
+                    wangwang,keyword,good_name,begin_time,end_time,master_money,slave_money,shop,good_price=row
+                row_dict=dict()
+                row_dict['mission_id']=mission_id
+                row_dict['username']=username
+                row_dict['accept_time']=self.decode_stamp(accept_time)
+                row_dict['finish_time']=self.decode_stamp(finish_time)
+                row_dict['status']=status
+                row_dict['order_id']=order_id
+                row_dict['reason']=reason
+                row_dict['wangwang']=wangwang
+                row_dict['keyword']=keyword
+                row_dict['good_name']=good_name
+                row_dict['begin_time']=self.decode_stamp(begin_time)
+                row_dict['end_time']=self.decode_stamp(end_time)
+                row_dict['master_money']=master_money
+                row_dict['slave_money']=slave_money
+                row_dict['shop']=shop
+                row_dict['good_price']=good_price
+                row_dict['id']=user_order_id
+                ret['data'].append(row_dict)
+            ret['code']=0
+            print(ret)
+        elif code=='36':
+            '''
+            获取徒弟贡献
+            '''
+            username=self.get_username()
+            statement='select complete_user,cash_op from cash_order where username="%s" and complete_user!="%s"'\
+                    %(username,username)
+            ret['code']=0
+            ret['data']=helper.query(statement)
+        elif code=='37':
+            '''
+            一键升级为师傅
+            '''
+            username=self.get_username()
+            statement='udpate user set role=4 where username="%s"'%(username)
+            ret['code']=helper.commit(statement)
+        elif code=='38':
+            '''
+            导出为excel
+            '''
+            statement='select count(*) from user_order where seller_username="%s" and username="%s"'%(seller_username,username)
+            # Sift is used to select order status, -1 for all
+            sift=self.get_argument('sift')
+            if int(sift)==-1:
+                statement='mission_id,username,accept_time,finish_time,success,status,order_id,reason '+\
+                    ',wangwang,keyword,good_name,begin_time,end_time'+\
+                    ' from user_order where seller_username="%s" and username="%s" order by  cast(accept_time as decimal) desc'\
+                    %(seller_username,username)
+            else:
+                statement='select mission_id,username,accept_time,finish_time,success,status,order_id,reason '+\
+                    ',wangwang,keyword,good_name,begin_time,end_time,master_money,slave_money'+\
+                    ' from user_order where seller_username="%s" and username="%s" and status="%s" order by '+\
+                    ' cast(accept_time as decimal) desc'\
+                    %(seller_username,username,str(sift))
+            res=helper.query(statement)
+            name=str(int(time.time()*100))+'.csv'
+            path='/home/ubuntu/taobao/file/'+name
+            with open(path,'w') as f:
+                f.write('任务编号,用户ID,接单时间,完成时间,状态,淘宝订单号,旺旺号,关键词,商品名,师傅佣金,徒弟佣金\n')
+                f.flush()
+                for row in res:
+                    mission_id,username,accept_time,finish_time,success,status,order_id,reason,\
+                        wangwang,keyword,good_name,begin_time,end_time=row
+                    sb=''
+                    sb+=str(mission_id)+','
+                    sb+=str(username)+','
+                    sb+=self.decode_stamp(accept_time)+','
+                    sb+=self.decode_stamp(finish_time)+','
+                    sb+=self.decode_order_status(status)+','
+                    sb+=order_id+','
+                    sb+=wangwang+','
+                    sb+=keyword+','
+                    sb+=good_name+','
+                    sb+=str(master_money)+','
+                    sb+=str(slave_money)+'\n'
+                    f.write(sb)
+                    r.flush()
+            ret['code']=0
+            ret['url']='/file/'+name
         else:
             pass
         self.set_header("Access-Control-Allow-Origin", "*") # 这个地方可以写域名
@@ -1107,14 +1210,15 @@ class MissionHandler(tornado.web.RequestHandler):
             order_id,mission_id,accept_time,finish_time,shop=row
             accept_time=float(accept_time)
             finish_time=float(finish_time)
-            if shop not in shop_dict:
+            if shop not in shop_cache:
                 # Query shop interval
                 statement='select mission_interval from shops where seller_username="%s" and shop="%s"'\
                         %(seller_username,shop)
                 res=helper.query(statement)
-                shop_interval=res[0][0]
-                if shop_interval==None:
-                    continue
+                if res==None or len(res)==0 or res[0][0]==None:
+                    shop_interval=3
+                else:
+                    shop_interval=res[0][0]
                 shop_cache[shop]=int(shop_interval)
             shop_interval=shop_cache[shop]
             if interval==None:

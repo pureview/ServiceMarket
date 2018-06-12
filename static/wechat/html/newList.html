@@ -43,7 +43,7 @@
         var data ={};
         data["code"]="25";
         data["wechat_id"] = window.localStorage.getItem("openID");
-        data["seller_username"] = window.localStorage.getItem("username");
+        data["seller_username"] = window.localStorage.getItem("seller_username");
         console.log(data);
         $.ajax({
             url: url,
@@ -88,7 +88,7 @@
         var data ={};
         data["code"]="21";
         data["wechat_id"] = window.localStorage.getItem("openID");
-        data["seller_username"] = window.localStorage.getItem("username");
+        data["seller_username"] = window.localStorage.getItem("seller_username");
         data["new_person_id"] = id;
         console.log(data);
         $.ajax({
@@ -116,7 +116,7 @@
         var data ={};
         data["code"]="34";
         data["wechat_id"] = window.localStorage.getItem("openID");
-        data["seller_username"] = window.localStorage.getItem("username");
+        data["seller_username"] = window.localStorage.getItem("seller_username");
         data["new_person_id"] = id;
         console.log(data);
         $.ajax({
