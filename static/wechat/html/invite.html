@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <title>邀请登录</title>
+    <style>
+    </style>
+</head>
+<body>
+<div class="container">
+        <div class="weui-cells weui-cells_form">
+            <div class="weui-cell">
+                <div class="weui-cells_hd">
+                    <label class="weui-label">邀请人ID</label>
+                </div>
+                <div class="weui-cells_bd">
+                    <input id="inviter_id" class="weui-input" type="number" pattern="[0-9]*" placeholder="请输入邀请人ID">
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cells_hd">
+                    <label class="weui-label">旺旺号</label>
+                </div>
+                <div class="weui-cells_bd">
+                    <input id="wangwang" class="weui-input" type="text" placeholder="请输入旺旺号">
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cells_hd">
+                    <label class="weui-label">年龄</label>
+                </div>
+                <div class="weui-cells_bd">
+                    <input id="age" class="weui-input" type="number" pattern="[0-9]*" placeholder="请输入年龄">
+                </div>
+            </div>
+            <div class="weui-cell" style="height:25px">
+                <div class="weui-cells_hd">
+                    <label class="weui-label">性别</label>
+                </div>
+                <div class="weui-cells_bd">
+                    <select id="gender" class="weui-select" name="select">
+                        <option selected="" value="1">女</option>
+                        <option value="2">男</option>
+                    </select>
+                </div>
+            </div>
+            <div class="weui-cell" style="height:25px">
+                <div class="weui-cells_hd">
+                    <label class="weui-label">备注</label>
+                </div>
+                <div class="weui-cells_bd">
+                    <input id="extra" type="text" style="width: 100%;padding: 5px;border: 1px solid #ccc;border-radius: 5px;">
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <div class="weui-uploader">
+                        <div class="weui-uploader__hd">
+                            <p class="weui-uploader__title">图片上传(提供近期淘宝订单页截图)</p>
+                        </div>
+                        <div class="weui-uploader__bd">
+                            <img id="img">
+                            <div class="weui-uploader__input-box" id="uploadImg">
+                                <input id="images" class="weui-uploader__input" type="file" accept="image/*" onchange="show(this.files)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="weui-btn-area">
+            <a class="weui-btn weui-btn_primary" onclick="invite()">确定</a>
+        </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript" src="../js/getopenID.js"></script>
+<script>
+    //getUserRole();
+function invite()
+{
+    var data= new FormData();
+    var gender;
+    if($('#gender').val()==1)
+        gender = "女";
+    else
+        gender = "男";
+    if($("#inviter_id").val() == "" || $("#age").val() == "" || $("#wangwang").val() == "" || $("#wangwang").val()=="")
+        alert("请填写完整信息");
+    else{
+        data.append("code","15");
+        data.append("wechat_id",window.localStorage.getItem("openID"));
+        data.append("inviter_id",$("#inviter_id").val());
+        data.append("seller_username",window.localStorage.getItem("seller_username"));
+        data.append("age",$("#age").val());
+        data.append("gender",gender);
+        data.append("wangwang",$("#wangwang").val());
+        data.append("extra",$("#extra").val());
+        data.append("images",$("#images")[0].files[0]);
+        $.ajax({
+            url : url,
+            type : 'POST',
+            dataType: 'JSON',
+            data : data,
+            processData : false,
+            contentType : false,
+            success: function(res){
+                if(res.code == 0)
+                {
+                    alert("注册成功");
+                    window.location.href = htmlPath+"/static/wechat/html/newStatus.html";
+                }
+                else{
+                    alert("注册失败，请重试");
+                }
+            }
+        });
+    }
+}
+</script>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <title>任务申请</title>
+    <style>
+        .flex{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        input{
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px;
+            width: 15rem;
+        }
+        span{
+            font-size: 1rem;
+            color: #9b9b9b;
+        }
+    </style>
+</head>
+<body>
+<div id="tip"></div>
+<div class="container" id="task">
+    <input type="hidden" id="user_order_id">
+    <div style="text-align: center;padding: 20px;">
+        <div><span >商品首页</span></div>
+        <img id="img" style="width: 80%;" onclick="previewImg()">
+    </div>
+    <div class="flex">
+        <span style="color: #000;font-size: 1.2rem">任务流程:</span>
+    </div>
+    <div class="flex">
+        <span>关键字:</span>
+        <span id="keyword" style="color: #e64340;"></span>
+    </div>
+    <div class="flex">
+        <span >商品数量:</span>
+        <span id="good_num" style="color: #e64340;"></span>
+    </div>
+    <div class="flex">
+        <span>商品价格区间:</span>
+        <span id="good_price" style="color: #e64340;"></span>
+    </div>
+    <div class="flex">
+        <span>排序方式:</span>
+        <span id="sort" style="color: #e64340;"></span>
+    </div>
+    <!--<div class="flex">-->
+        <!--<span>价格:</span>-->
+        <!--<span id="price" style="color: #e64340;"></span>-->
+    <!--</div>-->
+    <!--<div class="flex">-->
+        <!--<span>店铺名称:</span>-->
+        <!--<span id="shop" style="color: #e64340;"></span>-->
+    <!--</div>-->
+    <div class="flex" style="margin-top: 10px">
+        <span style="font-size: 1.2rem;color: #000;">请输入店铺名称</span>
+    </div>
+    <div class="flex">
+        <input type="hidden" id="shop" >
+        <input type="text" id="userShop" onchange='shopInput()'>
+        <span id="shopTip">验证</span>
+    </div>
+    <div class="flex" style="margin-top: 10px">
+        <span style="font-size: 1.2rem;color: #000;">请输入价格</span>
+    </div>
+    <div class="flex">
+        <input type="hidden" id="price">
+        <input type="text" id="userPrice" onchange='priceInput()'>
+        <span id="priceTip">验证</span>
+    </div>
+    <div class="flex" style="margin-top: 10px">
+        <span style="font-size: 1.2rem;color: #000;">请输入淘宝订单号</span>
+    </div>
+    <div class="flex">
+        <input type="text" id="order_id">
+    </div>
+    <div class="weui-btn-area" id="upload">
+        <a class="weui-btn weui-btn_primary" style="width:15rem; margin-top: 100px" onclick="uploadTask()" id="showTooltips">提交</a>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/jquery-weui.min.js"></script>
+<script type="text/javascript" src="../js/swiper.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    var img;
+    var id = getQueryString("id");
+    function getApprenticeTask()
+    {
+
+            var data = {};
+            data["code"] = 8;
+            data["wechat_id"] = window.localStorage.getItem("openID");
+            data["seller_username"] = window.localStorage.getItem("seller_username");
+            if(id != undefined)
+                data["id"] = id;
+            console.log(data);
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: data,
+                success: function(res){
+                    res = JSON.parse(res);
+                    console.log(res);
+                    if(res.code == "0")
+                    {
+                        $("#task").css("display","block");
+                        $("#tip").css("display","none");
+                        var taskData = res.data;
+                        img = htmlPath+"/"+taskData.task_image;
+                        $("#img").attr("src",img);
+                        $("#good_num").text(taskData.good_num);
+                        $("#good_price").text(taskData.price);
+                        $("#keyword").text(taskData.keyword);
+                        $("#sort").text(taskData.sort);
+                        $("#price").text(taskData.good_price);
+                        $("#shop").text(taskData.shop);
+                        var id = getQueryString("id");
+                        $("#user_order_id").val(id);
+
+                    }
+                    else if(res.code == "255")
+                    {
+                        $("#task").css("display","none");
+                        $("#tip").text(res.message);
+                    }
+                }
+            });
+    }
+    function uploadTask()
+    {
+        if(confirm == true && confirmPrice == true && $("#order_id").val() !="")
+        {
+            var data = {};
+            data["code"] = "9";
+            data["wechat_id"] = window.localStorage.getItem("openID");
+            data["seller_username"] = window.localStorage.getItem("seller_username");
+            data["user_order_id"] = $("#user_order_id").val();
+            data["order_id"] = $("#order_id").val();
+            console.log(data);
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: data,
+                success : function(res){
+                    res = JSON.parse(res);
+                    console.log(res);
+                    if(res.code == "0")
+                    {
+                        alert("提交成功");
+                        window.location.href = "apprentice.html";
+                    }
+                    else
+                    {
+                        alert(res.message);
+                    }
+                }
+            })
+        }
+        else
+        {
+            alert("请输入完整信息");
+        }
+    }
+
+    var confirm;
+    var confirmPrice;
+    function shopInput()
+    {
+        var shop = String($("#shop").text());
+        var userShop = String($("#userShop").val());
+        if(userShop == "")
+        {
+            $("#shopTip").text("验证");
+            $("#shopTip").css("color","green");
+            confirm = false;
+        }
+        else{
+            if(shop ==  userShop){
+                $("#shopTip").text("通过");
+                $("#shopTip").css("color","green");
+                confirm = true;
+            }
+            else
+            {
+                $("#shopTip").text("错误");
+                $("#shopTip").css("color","#999");
+                confirm = false;
+            }
+        }
+    }
+
+    function priceInput()
+    {
+        var shop = parseFloat($("#price").text()).toFixed(2);
+        var userShop = parseFloat($("#userPrice").val()).toFixed(2);
+        if(userShop == "")
+        {
+            $("#priceTip").text("验证");
+            $("#priceTip").css("color","green");
+            confirmPrice = false;
+        }
+        else{
+            if(shop ==  userShop)
+            {
+                $("#priceTip").text("通过");
+                $("#priceTip").css("color","green");
+                confirmPrice=true;
+            }
+            else
+            {
+                $("#priceTip").text("错误");
+                $("#priceTip").css("color","#999");
+                confirmPrice = false;
+            }
+        }
+    }
+
+    //预览图片
+    function previewImg()
+    {
+//        weui.gallery(img);
+//        $('.weui-gallery__del').remove();
+//        $('.weui-gallery span').html('');
+    }
+    getApprenticeTask();
+</script>
+</html>

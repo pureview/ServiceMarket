@@ -9,12 +9,28 @@
 </head>
 <body>
 <table id="manageOrder_dg"></table>
+<div id="searchtool" style="padding:5px">
+    <a onclick="dataExcel()" style="margin: 10px">导出</a>
+    <a onclick="passAllOrder()" style="margin: 10px">一键通过</a>
+    <span>订单状态：</span>
+    <select id="status" onchange="getOrderList()">
+        <option value="全部">全部</option>
+        <option value="0">任务进行中</option>
+        <option value="1">任务已提交</option>
+        <option value="2">审核成功</option>
+        <option value="3">审核失败</option>
+        <option value="4">任务失败</option>
+    </select>
+</div>
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript" src="../js/datagrid-filter.js"></script>
 <script type="text/javascript" src="../js/manageOrder.js"></script>
+<script type="text/javascript" src="../js/tableExport.js"></script>
+<script type="text/javascript" src="../js/jquery.base64.js"></script>
 <script>
-
+    getOrderList();
 </script>
 </html>

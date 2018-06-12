@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../style/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../style/icon.css">
+    <link rel="stylesheet" type="text/css" href="../style/base.css">
+    <title>提现时间</title>
+    <style>
+        .myButton{
+            background: #5ac1f3;
+            color: #fff;
+            width: 8rem;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            border: 1px solid #5ac1f3;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+<div style="text-align: center; margin: 100px">
+    <div style="margin: 20px">
+        <span>提现开始时间：</span>
+        <input id="start_time" style="width:50%;height:32px" placeholder="填写格式9:00">
+    </div>
+    <div style="margin: 20px">
+        <span>提现结束时间：</span>
+        <input id="end_time" style="width:50%;height:32px" placeholder="填写格式15:00">
+    </div>
+    <div style="text-align: center;margin: 20px">
+        <button class="myButton" onclick="confirmTime()">确定</button>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    function confirmTime()
+    {
+        var data = {};
+        data["code"] = "31";
+        data["begin_time"] = $("#start_time").val();
+        data["end_time"] = $("#end_time").val();
+        data["seller_username"] = window.localStorage.getItem("username");
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res)
+            {
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == "0")
+                {
+                    alert("设置成功");
+                    $("#begin_time").val("");
+                    $("#end_time").val("");
+                }
+                else
+                    alert("设置失败");
+            }
+        })
+    }
+</script>
+</html>

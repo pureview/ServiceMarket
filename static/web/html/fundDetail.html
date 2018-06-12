@@ -14,12 +14,22 @@
 </head>
 <body>
 <table id="fundDetail_dg"></table>
+<div id="searchtool" style="padding:5px">
+    <span>开始时间：</span><input id="begin_date" type="text" id="start_date" value="20180101" size=20 placeholder="格式20180101"/>
+    <span>结束时间：</span><input id="end_date" type="text" id="end_date" value="20180113" size=20 placeholder="格式20180101"/>
+    <a onclick="getFundDetail()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+    <div id="span" style="padding:5px">
+        <span>总佣金：</span><span id="mission_money"></span>
+        <span>总本金：</span><span id="good_money"></span>
+        <span>总单数：</span><span id="order_num"></span>
+    </div>
+</div>
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <script type="text/javascript" src="../js/fundDetail.js"></script>
 <script>
-
+//    getFundDetail();
 </script>
 </html>

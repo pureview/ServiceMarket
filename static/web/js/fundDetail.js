@@ -2,11 +2,10 @@
  * Created by funing on 2018/5/31.
  */
 $(function(){
-    $("#fundDetail_dg").datagrid({
-        url:'datagrid_data1.json',
+    var dg = $("#fundDetail_dg").datagrid({
         fit: true,
         rownumbers : true,
-        pagination : true,
+        pagination : false,
         fitColumns:true,
         singleSelect:false,
         onClickCell: onClickCell,
@@ -14,37 +13,32 @@ $(function(){
         idField : 'id',
         columns:[
             [{
-                field: 'totalFund',
-                title: '总佣金花费',
+                field: 'mission_money',
+                title: '佣金花费',
                 width: '20%',
                 align: 'center'
             },
             {
-                field: 'totalCapital',
-                title: '总本金花费',
+                field: 'good_money',
+                title: '本金花费',
                 width: '20%',
                 align: 'center'
             },
             {
-                field: 'totalNum',
-                title: '总单数',
-                width: '20%',
-                align: 'center'
-            },
-            {
-                field: 'master',
+                field: 'master_money',
                 title: '师父佣金',
                 width: '20%',
                 align: 'center'
             },
             {
-                field: 'apprentice',
+                field: 'slave_money',
                 title: '徒弟佣金',
                 width: '20%',
                 align: 'center'
             }]
-        ]
-    })
+        ],
+        toolbar: "#searchtool"
+    });
 });
 
 function onClickCell(index, field){
@@ -52,5 +46,48 @@ function onClickCell(index, field){
         $('#fundDetail_dg').datagrid('selectRow', index)
             .datagrid('editCell', {index:index,field:field});
         editIndex = index;
+    }
+}
+
+//获取资金明细
+function  getFundDetail(pageNum)
+{
+    if(pageNum == null)
+        pageNum = 0;
+    var data = {};
+    var begin = $("#begin_date").val();
+    var end = $("#end_date").val();
+    data["code"] = 11;
+    data["page"] = pageNum;
+    data["seller_username"] = window.localStorage.getItem("username");
+    data["begin_date"] = begin;
+    data["end_date"] = end;
+    console.log(data);
+    if(begin == undefined || end == undefined)
+    {
+        alert("请填写起止时间");
+    }
+    else{
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == "0")
+                {
+                    $("#good_money").text(res.good_money);
+                    $("#mission_money").text(res.mission_money);
+                    $("#order_num").text(res.order_num);
+                    var row = [];
+                    for(var i=0; i<res.data.length;i++)
+                    {
+                        row.push(res.data[i]);
+                    }
+                    $("#fundDetail_dg").datagrid('loadData',{ total: res.data.length, rows: row });
+                }
+            }
+        })
     }
 }

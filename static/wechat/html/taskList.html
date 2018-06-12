@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <title>任务列表</title>
+    <style>
+        select{
+            border: 1px solid #ccc;
+            padding: 5px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <select id="select" onchange="getFinishedTask()">
+        <option value="-1" selected>全部</option>
+        <option value="0">任务中</option>
+        <option value="1">任务提交</option>
+        <option value="2">审核成功</option>
+        <option value="3">审核失败</option>
+        <option value="4">超时</option>
+    </select>
+    <div class="weui-cells" id="list">
+        <!--<div class="weui-cell weui-cell_access">-->
+            <!--<div class="weui-cell__bd">-->
+                <!--<div><span style="vertical-align: middle">店铺名称：</span><span></span></div>-->
+                <!--<div><span style="vertical-align: middle">商品名称：</span><span></span></div>-->
+                <!--<div><span style="vertical-align: middle">商品价格：</span><span></span></div>-->
+                <!--<div><span style="vertical-align: middle">关键字：</span><span></span></div>-->
+                <!--<div><span style="vertical-align: middle; color:#999">任务状态：</span><span></span></div>-->
+            <!--</div>-->
+        <!--</div>-->
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    function getFinishedTask()
+    {
+        var sift = $("#select").val();
+        $("#list").html("");
+        console.log(sift);
+        var data = {};
+        data["code"] = 35;
+        data["sift"] = sift;
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        data["seller_username"] = window.localStorage.getItem("username");
+        console.log(data);
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == "0")
+                {
+                    var list = res.data;
+                    for(var i = 0;i<list.length; i++)
+                    {
+                        var taskStatus;
+                        switch (list[i].status)
+                        {
+                            case 0:
+                                taskStatus = "任务中";
+                                break;
+                            case 1:
+                                taskStatus = "任务提交";
+                                break;
+                            case 2:
+                                taskStatus = "审核成功";
+                                break;
+                            case 3:
+                                taskStatus = "审核失败";
+                                break;
+                            case 4:
+                                taskStatus = "超时";
+                                break;
+
+                        }
+                        if(taskStatus == "任务中")
+                        {
+                            var html = $('<div class="weui-cell weui-cell_access" onclick="window.location.href=\'taskDetail.html?id='+list[i].id+'\'">'+
+                                    '<div class="weui-cell__bd">'+
+                                    '<div><span style="vertical-align: middle">店铺名称：</span><span>'+list[i].shop+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">商品名称：</span><span>'+list[i].good_name+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">商品价格：</span><span>'+list[i].good_price+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">关键字：</span><span>'+list[i].keyword+'</span></div>'+
+                                    '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+taskStatus+'</span></div>'+
+                                    '</div>'+
+                                    '</div>');
+                        }
+                        else
+                        {
+                            var html = $('<div class="weui-cell weui-cell_access">'+
+                                    '<div class="weui-cell__bd">'+
+                                    '<div><span style="vertical-align: middle">店铺名称：</span><span>'+list[i].shop+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">商品名称：</span><span>'+list[i].good_name+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">商品价格：</span><span>'+list[i].good_price+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">关键字：</span><span>'+list[i].keyword+'</span></div>'+
+                                    '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+taskStatus+'</span></div>'+
+                                    '</div>'+
+                                    '</div>');
+                        }
+                        $("#list").append(html);
+                    }
+                }
+            }
+        });
+    }
+    getFinishedTask();
+</script>
+</html>

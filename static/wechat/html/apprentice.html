@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <title>用户</title>
+    <style>
+        body{
+            background: #efeff4;
+        }
+        .tips{
+            background: #fff;
+            padding: 10px;
+            margin: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 5px 5px 2px #ccc;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!--<div id="msgBox" style="background: #fff;padding: 10px;margin: 10px 0 10px 0;">-->
+        <!--<span id="msg" style="font-size: 1.2rem"></span>-->
+    <!--</div>-->
+    <!--<div id="tasking" class="weui-cells" style="margin-top:10px">-->
+        <!--<div class="weui-cell weui-cell_access" onclick="window.location.href='taskDetail.html';">-->
+            <!--<div class="weui-cell__bd">-->
+                <!--<div><span style="vertical-align: middle;font-size: 1.2rem">任务进行中...</span></div>-->
+                <!--<div style="padding: 5px;">-->
+                    <!--<div>-->
+                        <!--<span style="vertical-align: middle; color:#999">商品名称：</span>-->
+                        <!--<span style="vertical-align: middle; color:#999" id="good_name"></span>-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<span style="vertical-align: middle; color:#999">商品数量：</span>-->
+                        <!--<span style="vertical-align: middle; color:#999" id="good_num"></span>-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<span style="vertical-align: middle; color:#999">商品价格：</span>-->
+                        <!--<span style="vertical-align: middle; color:#999" id="good_price"></span>-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<span style="vertical-align: middle; color:#999">关键词：</span>-->
+                        <!--<span style="vertical-align: middle; color:#999" id="keyword"></span>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="weui-cell__ft"></div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="tips">
+        <div style="text-align: center"><p style="font-size: 1.3rem">公告</p></div>
+        <span id="tips">测试测试测试</span>
+    </div>
+    <div class="weui-cells" style="margin-top:10px;position:sticky; position:-webkit-sticky;bottom:0;">
+        <div class="weui-cell weui-cell_access" onclick="window.location.href='teach.html';">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">新手教程</span>
+            </div>
+            <div class="weui-cell__ft"></div>
+        </div>
+        <div class="weui-cell weui-cell_access" onclick="window.location.href='taskDetail.html';">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">申请任务</span>
+            </div>
+            <div class="weui-cell__ft"></div>
+        </div>
+        <div class="weui-cell weui-cell_access" onclick="window.location.href='fundList.html';">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">我的资金</span>
+            </div>
+            <div class="weui-cell__ft"></div>
+        </div>
+        <div class="weui-cell weui-cell_access" onclick="window.location.href='taskList.html';">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">我的任务</span>
+            </div>
+            <div class="weui-cell__ft"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    getTips();
+</script>
+</html>

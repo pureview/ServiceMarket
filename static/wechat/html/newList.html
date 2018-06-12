@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <title>资金明细</title>
+    <style>
+    body{
+        background: #efeff4;
+    }
+    </style>
+</head>
+<body>
+<div class="container" id="list">
+    <!--<div class="weui-form-preview" style="margin-top:15px">-->
+        <!--<div class="weui-form-preview__bd">-->
+            <!--<div class="weui-form-preview__item">-->
+                <!--<label class="weui-form-preview__label">介绍人ID</label>-->
+                <!--<span class="weui-form-preview__value">100090299120</span>-->
+            <!--</div>-->
+            <!--<div class="weui-form-preview__item">-->
+                <!--<label class="weui-form-preview__label">性别</label>-->
+                <!--<span class="weui-form-preview__value">男</span>-->
+            <!--</div>-->
+            <!--<div class="weui-form-preview__item">-->
+                <!--<label class="weui-form-preview__label">年龄</label>-->
+                <!--<span class="weui-form-preview__value">21</span>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="weui-form-preview__ft">-->
+            <!--<a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">通过</a>-->
+            <!--<a class="weui-form-preview__btn weui-form-preview__btn_default" href="javascript:">不通过</a>-->
+        <!--</div>-->
+    <!--</div>-->
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    function getNewList()
+    {
+        var data ={};
+        data["code"]="25";
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        data["seller_username"] = window.localStorage.getItem("username");
+        console.log(data);
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == "0")
+                {
+                    var list = res.data;
+                    for(var i=0;i<list.length;i++)
+                    {
+                        var html = ('<div class="weui-form-preview" style="margin-top:15px">'+
+                        '<div class="weui-form-preview__bd">'+
+                            '<div class="weui-form-preview__item">'+
+                            '<label class="weui-form-preview__label">介绍人ID</label>'+
+                            '<span class="weui-form-preview__value">'+list[i].inviter_id+'</span>'+
+                            '</div>'+
+                            '<div class="weui-form-preview__item">'+
+                            '<label class="weui-form-preview__label">性别</label>'+
+                            '<span class="weui-form-preview__value">'+list[i].gender+'</span>'+
+                            '</div>'+
+                            '<div class="weui-form-preview__item">'+
+                            '<label class="weui-form-preview__label">年龄</label>'+
+                            '<span class="weui-form-preview__value">'+list[i].age+'</span>'+
+                            '</div>'+
+                            '</div>'+
+                            '<div class="weui-form-preview__ft">'+
+                            '<a class="weui-form-preview__btn weui-form-preview__btn_primary" onclick="agree(\''+list[i].id+'\')">通过</a>'+
+                            '<a class="weui-form-preview__btn weui-form-preview__btn_default" onclick="disagree(\''+list[i].id+'\')">不通过</a>'+
+                            '</div>'+
+                            '</div>');
+                        $("#list").append(html);
+                    }
+                }
+            }
+        })
+    }
+    function agree(id)
+    {
+        var data ={};
+        data["code"]="21";
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        data["seller_username"] = window.localStorage.getItem("username");
+        data["new_person_id"] = id;
+        console.log(data);
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == 0)
+                {
+                    alert("通过成功");
+                    $("#list").html("");
+                    getNewList();
+                }
+                else
+                {
+                    alert("通过失败");
+                }
+            }
+        })
+    }
+    function disagree(id)
+    {
+        var data ={};
+        data["code"]="34";
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        data["seller_username"] = window.localStorage.getItem("username");
+        data["new_person_id"] = id;
+        console.log(data);
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == 0)
+                {
+                    alert("拒绝成功");
+                    $("#list").html("");
+                    getNewList();
+                }
+                else
+                {
+                    alert("拒绝失败");
+                }
+            }
+        })
+    }
+    getNewList();
+</script>
+</html>

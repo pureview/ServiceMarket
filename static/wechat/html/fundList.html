@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <title>资金明细</title>
+    <style>
+        body{
+             background: #efeff4;
+         }
+        .background{
+            background: #fff;
+            padding: 5px 15px 10px 15px;
+        }
+        input{
+            border: 1px solid #ccc;
+            padding: 5px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .money{
+            display: inline-block;
+            width: 40%;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="background" style="text-align:center">
+        <div>
+            <p>总金额</p>
+            <p id="allMoney" style="color:red;font-size:2rem">0</p>
+        </div>
+        <div class="money">
+            <span>历史本金:</span>
+            <span id="good_money" style="font-size:1.2rem">0</span>
+        </div>
+        <div class="money">
+            <span>历史佣金:</span>
+            <span id="mission_money" style="font-size:1.2rem">0</span>
+        </div>
+    </div>
+    <div class="background" style="text-align:center">
+        <!--<select id="select">-->
+            <!--<option value="0">本金</option>-->
+            <!--<option value="1">佣金</option>-->
+        <!--</select>-->
+        <input id="money" placeholder="请输入提现金额" type="number">
+        <a class="weui-btn weui-btn_primary" onclick="getMoney()" style="width:30%;height: 2.5rem;line-height: 2.5rem">提现</a>
+    </div>
+    <div class="weui-cells" id="list">
+        <!--<div class="weui-cell weui-cell_access">-->
+            <!--<div class="weui-cell__bd">-->
+                <!--<div>-->
+                    <!--<span id="good_price" style="vertical-align: middle">本金提现</span>-->
+                    <!--&lt;!&ndash;<span style="vertical-align: middle;color:red;float:right">+55</span>&ndash;&gt;-->
+                <!--</div>-->
+                <!--<div><span id="master_money" style="vertical-align: middle; color:#999">订单编号：10000199002981002</span></div>-->
+                <!--<div><span id="slave_money" style="vertical-align: middle; color:#999">订单编号：10000199002981002</span></div>-->
+                <!--<div><span id="finish_time" style="vertical-align: middle; color:#999">2018-2-12 13:00:00</span></div>-->
+            <!--</div>-->
+        <!--</div>-->
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    //获取用户资金列表
+    function getFundList()
+    {
+        var data = {};
+        data["code"] = "13";
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        data["seller_username"] = window.localStorage.getItem("username");
+        console.log(data);
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                var list = res.data;
+                var detail;
+                for(var i=0;i<list.length;i++)
+                {
+                    if(list[i].detail == null)
+                        detail = "";
+                    else
+                        detail = list[i].detail;
+                    var html = $('<div class="weui-cell weui-cell_access">'+
+                                        '<div class="weui-cell__bd">'+
+                                    '<div>'+
+                                    '<span style="vertical-align: middle">'+list[i].detail+'</span>'+
+                                    '<span style="vertical-align: middle;color:red;float:right">'+list[i].cash_op+'</span>'+
+                                    '</div>'+
+                                    '<div><span style="vertical-align: middle; color:#999">剩余金额：</span><span id="master_money" style="vertical-align: middle; color:#999">'+list[i].cash_left+'</span></div>'+
+                            '<div><span style="vertical-align: middle; color:#999">用户名：</span><span id="slave_money" style="vertical-align: middle; color:#999">'+list[i].username+'</span></div>'+
+                            '<div><span id="finish_time" style="vertical-align: middle; color:#999">'+detail+'</span></div>'+
+                            '</div>'+
+                            '</div>');
+                    $("#list").append(html);
+                }
+            }
+        })
+    }
+//    获取用户剩余money
+    function getUserFund()
+    {
+        var data = {};
+        data["code"] = "17";
+        data["op"] = "0";
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        data["seller_username"] = window.localStorage.getItem("username");
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == "0")
+                {
+                    $("#allMoney").text("¥"+res.cash_left);
+                    $("#good_money").text("¥"+res.good_money);
+                    $("#mission_money").text("¥"+res.mission_money);
+                }
+            }
+        })
+    }
+//    提现
+    function getMoney()
+    {
+        var data = {};
+        data["code"] = "17";
+        data["op"] = "1";
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        data["seller_username"] = window.localStorage.getItem("username");
+        data["money"] = $("#money").val();
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                if(res.code == "0")
+                {
+                    window.location.href = res.data;
+                }
+            }
+        })
+    }
+    getUserFund();
+    getFundList();
+</script>
+</html>

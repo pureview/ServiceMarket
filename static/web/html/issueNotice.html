@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../style/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../style/icon.css">
+    <link rel="stylesheet" type="text/css" href="../style/base.css">
+    <title></title>
+    <style>
+        .myButton{
+            background: #5ac1f3;
+            color: #fff;
+            width: 8rem;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            border: 1px solid #5ac1f3;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="center" style="margin-top: 50px">
+        <textarea id="textarea" placeholder="请输入公告信息" value="" style="width:500px;height:250px;resize: none;padding: 10px;border-radius: 10px"></textarea>
+    </div>
+    <div class="center" style="margin-top: 30px">
+        <button class="myButton" onclick="issueNotice()">发布公告</button>
+    </div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+function issueNotice()
+{
+    var data ={};
+    data["code"]="33";
+    data["op"] = "1";
+    data["seller_username"] = window.localStorage.getItem("username");
+    data["notice"] = $("#textarea").val();
+    console.log(data);
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: data,
+        success: function(res){
+            res = JSON.parse(res);
+            console.log(res);
+            if(res.code == 0)
+            {
+                alert("发布成功");
+                $("#textarea").val("");
+            }
+            else{
+                alert("发布失败");
+            }
+        }
+    })
+}
+</script>
+</html>

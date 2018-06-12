@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../style/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../style/icon.css">
+    <link rel="stylesheet" type="text/css" href="../style/base.css">
+    <title>店铺管理</title>
+    <style>
+        .myButton{
+            background: #5ac1f3;
+            color: #fff;
+            width: 8rem;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            border: 1px solid #5ac1f3;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+<div id="addShop" class="easyui-window" title="添加店铺" style="width:500px;height:220px;padding:5px;">
+    <div class="easyui-layout" data-options="fit:true" style="text-align: center;padding: 10px">
+        <div style="margin-bottom: 20px">
+            <span>店铺名称：</span>
+            <input id="shopName" class="easyui-textbox" style="width:50%;height:32px">
+        </div>
+        <div style="margin-bottom: 20px">
+            <span>任务间隔：</span>
+            <input id="interval" class="easyui-numberbox" style="width:50%;height:32px">
+        </div>
+        <div style="text-align: center;margin-bottom: 20px">
+            <button class="myButton" onclick="addShop()">添加店铺</button>
+        </div>
+    </div>
+</div>
+<table id="setupShop_dg"></table>
+<div id="span" style="padding:5px">
+    <a onclick="openWindow()">添加店铺</a>
+    <div style="float: right;"><span>店铺总数：</span><span id="shop_num"></span></div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript" src="../js/setupShop.js"></script>
+<script>
+    $("#addShop").window({
+        collapsible:false,
+        minimizable:false,
+        maximizable:false,
+        draggable:false,
+        closed: true,
+        modal: true,
+        cache:false
+    });
+   allShopList();
+</script>
+</html>
