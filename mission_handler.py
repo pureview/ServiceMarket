@@ -16,7 +16,7 @@ from util.message_util import *
 logger=get_logger()
 myappkey="43b6ccf1-ec3d-4de9-98ca-156aa618a0e3"
 apiurl=  "https://www.jufenyun.com/openapi/gateway"
-
+# TODO: 检查邀请码是否存在
 class MissionHandler(tornado.web.RequestHandler):
     def secure_gate(self):
         # Check user identity whether username and wechat_id match.
@@ -210,10 +210,10 @@ class MissionHandler(tornado.web.RequestHandler):
                 ret['message']='没有正在执行的任务'
                 self.reply(ret);return
             mission_object=res[0][0]
-            statement='update mission_object set status="0" where id="%s"'%(mission_object)
+            statement='update mission_object set status="1" where id="%s"'%(mission_object)
             helper.commit(statement)
             # 更改任务类别状态
-            statement='update mission_class set status="1" where id="%s"'%(mission_class)
+            statement='update mission_class set status="0" where id="%s"'%(mission_class)
             ret['code']=helper.commit(statement)
         elif code=='8':
             '''
@@ -263,7 +263,7 @@ class MissionHandler(tornado.web.RequestHandler):
                         self.reply(ret);return
                     if mission_num==0 or good_num==0:
                         print('[DEBUG] mission num==0 or good num==0',mission_num,good_num)
-                        self.reply(ret);return
+                        continue
                     interval=(float(end_time)-float(begin_time))/mission_num
                     cur_timestamp=time.time()
                     if last_timestamp==None:
@@ -272,17 +272,14 @@ class MissionHandler(tornado.web.RequestHandler):
                         if cur_timestamp-float(last_timestamp)>interval:
                             pass
                         else:
-                            print('[DEBUG] 间隔时间不足，任务已被拦截',cur_timestamp,last_timestamp)
-                            ret['message']='暂时没有任务'
-                            #TODO: This is a debug statement
-                            print(ret)
-                            self.reply(ret);return
+                            #print('[DEBUG] 间隔时间不足，任务已被拦截',cur_timestamp,last_timestamp)
+                            continue
                     # Write current timestamp 
                     statement='update mission_object set last_timestamp="%s" where id="%s"'%(str(cur_timestamp),mission_id)
                     res_=helper.commit(statement)
                     if int(res_)!=0:
                         print('[DEBUG] Update timestamp fail',res_)
-                        self.reply(ret);return
+                        continue
                     # Successfully get mission
                     print('Successfully get mission')
                     break
@@ -472,6 +469,7 @@ class MissionHandler(tornado.web.RequestHandler):
             ret['order_num']=order_num 
             ret['master_money']=master_money
             ret['slave_money']=slave_money
+            print(ret)
         elif code=='12':
             '''
             用户查询订单
@@ -672,24 +670,6 @@ class MissionHandler(tornado.web.RequestHandler):
             '''
             # TODO-B: 当数额较大时增加安全校验
             # 查询提现时间
-            statement='select setting from seller where username="%s"'%(seller_username)
-            setting=helper.query(statement)
-            if setting!=None and len(setting)>0 and setting[0][0]!=None and setting[0][0]!='':
-                cash_begin_hour,cash_begin_minute=0,0
-                cash_end_hour,cash_end_minute=24,60
-                setting=json.loads(setting)
-                cash_begin_hour,cash_begin_minute=setting['cash_begin_time'].split(':')
-                cash_end_hour,cash_end_minute=setting['cash_end_time'].split(':')
-            else:
-                cash_begin_hour,cash_begin_minute=9,0
-                cash_end_hour,cash_end_minute=17,0
-            now=datetime.datetime.now()
-            cur_hour,cur_minute=now.hour,now.minute
-            if cur_hour<int(cash_begin_hour) or cur_hour>int(cash_end_hour):
-                self.reply(ret);return
-            if (cur_hour==int(cash_begin_hour) and cur_minute<int(cash_begin_minute)) or \
-                    (cur_hour==int(cash_end_hour) and cur_minute>int(cash_end_minute)):
-                self.reply();return
             username=self.get_username()
             op=self.get_argument('op')
             # op=0: 查询余额，op=1:提现
@@ -713,7 +693,27 @@ class MissionHandler(tornado.web.RequestHandler):
                     ret['good_money']=good_money
                     ret['mission_money']=mission_money
                     ret['code']=0
+                    print('查询余额:',ret)
                 elif op=='1':
+                    statement='select setting from seller where username="%s"'%(seller_username)
+                    setting=helper.query(statement)
+                    if setting!=None and len(setting)>0 and setting[0][0]!=None and setting[0][0]!='':
+                        cash_begin_hour,cash_begin_minute=0,0
+                        cash_end_hour,cash_end_minute=24,60
+                        setting=json.loads(setting[0][0])
+                        cash_begin_hour,cash_begin_minute=setting['cash_begin_time'].split(':')
+                        cash_end_hour,cash_end_minute=setting['cash_end_time'].split(':')
+                    else:
+                        cash_begin_hour,cash_begin_minute=9,0
+                        cash_end_hour,cash_end_minute=17,0
+                    now=datetime.datetime.now()
+                    cur_hour,cur_minute=now.hour,now.minute
+                    if cur_hour<int(cash_begin_hour) or cur_hour>int(cash_end_hour):
+                        self.reply(ret);return
+                    if (cur_hour==int(cash_begin_hour) and cur_minute<int(cash_begin_minute)) or \
+                            (cur_hour==int(cash_end_hour) and cur_minute>int(cash_end_minute)):
+                        self.reply();return
+
                     money=float(self.get_argument('money'))
                     if money>0 and cash_left>money:
                         #将数据写入数据库，提交提现
@@ -1188,6 +1188,74 @@ class MissionHandler(tornado.web.RequestHandler):
                     r.flush()
             ret['code']=0
             ret['url']='/file/'+name
+        elif code=='39':
+            '''
+            查询是否有任务，如果没有，返回任务预期出现时间
+            输入wechat_id，返回一个code和message，只需要打印出message就行了
+            '''
+            self.secure_gate()
+            username=self.get_username()
+            wechat_id=self.get_argument('wechat_id')
+            ret['data']=dict()
+            # Query user's identity
+            statement='select role,blacklist,mission_interval from user where wechat_id="%s"'%(wechat_id)
+            res=helper.query(statement)
+            if len(res)>0:
+                role,black_list,mission_interval=res[0]
+                if (black_list!=None and black_list!=0) or role==None or role==0:
+                    print(statement)
+                    print('[DEBUG] User in blacklist or role is none')
+                    ret['message']='您无法做任务'
+                    self.reply(ret);return
+            else:
+                print(statement)
+                print('[DEBUG] Cannot query any user')
+                ret['message']='您还未注册'
+                self.reply(ret);return
+            user_interval=res[0][2]
+            # Select user mission record
+            statement='select id,mission_id,accept_time,finish_time,shop '+\
+                    'from user_order where seller_username="%s" and username="%s" and status<"3" order by '%(seller_username,username)+\
+                    'accept_time desc limit 100'
+            res=helper.query(statement)
+            shop_dict=self.get_shop_dict(res,user_interval)
+            if len(shop_dict)==0:
+                print('[DEBUG] shop_dict is empty, please check statement',statement)
+            # Query active 
+            statement='select id,mission_class,begin_time,end_time,master_money,slave_money,allow,last_timestamp'+\
+                    ',mission_num,good_num,shop from mission_object '+\
+                    'where seller_username="%s" and status="0"'%(seller_username)
+            res=helper.query(statement)
+            # 预期等待
+            waiting_time=9999999
+            for row in res:
+                mission_id,mission_class,begin_time,end_time,master_money,slave_money,allow,last_timestamp,mission_num,good_num,shop=row
+                if shop in shop_dict:
+                    # TODO: This is a debug statement
+                    continue
+                # Calculate time interval
+                if allow==1 and role!=4:
+                    self.reply(ret);return
+                if mission_num==0 or good_num==0:
+                    continue
+                interval=(float(end_time)-float(begin_time))/mission_num
+                c_waiting_time=interval-(cur_timestamp-float(last_timestamp))
+                if c_waiting_time<waiting_time:
+                    waiting_time=c_waiting_time
+                cur_timestamp=time.time()
+                if last_timestamp==None:
+                    pass
+                else:
+                    if cur_timestamp-float(last_timestamp)>interval:
+                        pass
+                    else:
+                        continue
+                ret['code']=0
+                ret['message']='当前任务可用，快去申请任务吧'
+                break
+            else:
+                ret['code']=255
+                ret['message']='暂无任务，预计等待时间'+str(int(waiting_time))+'秒'
         else:
             pass
         self.set_header("Access-Control-Allow-Origin", "*") # 这个地方可以写域名
@@ -1335,5 +1403,5 @@ class MissionHandler(tornado.web.RequestHandler):
         jsdict_2['redpack_sn']=redpack_sn
         jsoncheck=json.dumps(jsdict_2)
         response= urllib.request.urlopen(apiurl,jsoncheck).read().decode('utf-8')
-        dict=json.loads(response)
-        return dict;
+        temp=json.loads(response)
+        return temp;

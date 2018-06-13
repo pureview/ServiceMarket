@@ -35,7 +35,7 @@ $(function(){
                     if(row.status == "1")//0为未发布
                         return '<input type="checkbox" disabled>';
                     else
-                        return '<input name="check_input" type="checkbox">';
+                        return '<input name="check_input" type="checkbox" onclick="getRowData(\''+row+'\',\''+row.id+'\')">';
                 }
             },
             {
@@ -383,39 +383,49 @@ function getTaskList(pageNum)
     })
 }
 
+var rowData;
+var mission_id;
+function getRowData(row,id)
+{
+    rowData = row;
+    mission_id = id;
+    console.log(rowData);
+}
+
 //发布任务
 function lanchTask()
 {
-    var rowData = $("#manageTask_dg").datagrid('getSelections');
-    for(var i = 0; i<rowData.length;i++)
-    {
-        var mission_class = rowData[i].id;
+    console.log(mission_id);
+    //var rowData = $("#manageTask_dg").datagrid('getSelections');
+    //for(var i = 0; i<rowData.length;i++)
+    //{
+        var mission_class = mission_id;
         //var begin_time = changeTime(rowData[i].startTime);
         //var end_time = changeTime(rowData[i].endTime);
         var begin_time;
         var end_time;
-        var master_money = rowData[i].master;
-        var salve_money = rowData[i].apprentice;
-        var good_num = rowData[i].count;
-        var mission_num = rowData[i].taskNum;
+        var master_money = rowData.master;
+        var salve_money = rowData.apprentice;
+        var good_num = rowData.count;
+        var mission_num = rowData.taskNum;
         var allow;
-        if(rowData[i].startTime == undefined)
+        if(rowData.startTime == undefined)
         {
             begin_time = changeTime(new Date());
         }
-        if(rowData[i].endTime == undefined)
+        if(rowData.endTime == undefined)
         {
             end_time = changeTime(new Date());
         }
-        if(rowData[i].relation == undefined)
+        if(rowData.relation == undefined)
         {
             allow = 0;
         }
         else
         {
-            if(rowData[i].relation == "全部")
+            if(rowData.relation == "全部")
                 allow = 0;
-            else if(rowData[i].relation == "师父")
+            else if(rowData.relation == "师父")
                 allow = 1;
         }
         if(master_money == undefined)
@@ -447,6 +457,7 @@ function lanchTask()
                 res = JSON.parse(res);
                 if(res.code == "0")
                 {
+                    alert("发布成功");
                     $("#manageTask_dg").html("");
                     getTaskList();
                 }
@@ -456,8 +467,8 @@ function lanchTask()
                     getTaskList();
                 }
             }
-        })
-    }
+        });
+    //}
 }
 
 //取消任务

@@ -19,7 +19,7 @@ $(function(){
                 align: 'center'
             },
             {
-                field: 'good_money',
+                field: 'good_price',
                 title: '本金花费',
                 width: '20%',
                 align: 'center'
@@ -77,7 +77,7 @@ function  getFundDetail(pageNum)
                 console.log(res);
                 if(res.code == "0")
                 {
-                    $("#good_money").text(res.good_money);
+                    $("#good_price").text(res.good_price);
                     $("#mission_money").text(res.mission_money);
                     $("#order_num").text(res.order_num);
                     var row = [];
