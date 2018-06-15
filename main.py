@@ -1,6 +1,8 @@
 import tornado.ioloop
 import tornado.web
+import logging
 from mission_handler import *
+from tornado.log import *
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -13,6 +15,10 @@ def make_app():
     ])
 
 if __name__ == "__main__":
+    handler = logging.FileHandler('log/main.log')
+    app_log = logging.getLogger("tornado.application")
+    enable_pretty_logging()
+    app_log.addHandler(handler)
     app = make_app()
     app.listen(8080)
     tornado.ioloop.IOLoop.current().start()

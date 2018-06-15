@@ -9,12 +9,12 @@ $(function(){
         fitColumns:true,
         singleSelect:false,
         onClickCell: onClickCell,
-        pageList : [ 10 ],
-        pageSize: 10,
+        pageList : [ 20 ],
+        pageSize: 20,
         idField : 'id',
         columns:[
             [{
-                field: 'master_id',
+                field: 'id',
                 title: '用户ID',
                 align: 'center'
             },
@@ -34,6 +34,11 @@ $(function(){
                 align: 'center'
             },
             {
+                field: 'phone',
+                title: '手机号',
+                align: 'center'
+            },
+            {
                 field: 'wangwang',
                 title: '旺旺号',
                 align: 'center'
@@ -41,6 +46,11 @@ $(function(){
             {
                 field: 'wechat_id',
                 title: '微信号',
+                align: 'center'
+            },
+            {
+                field: 'blacklist',
+                title: '状态',
                 align: 'center'
             },
             {
@@ -53,7 +63,8 @@ $(function(){
                 title: '操作',
                 align: 'center',
                 formatter: function(value,row,index){
-                    return '<a onclick="blackList(\''+row.wechat_id+'\')">拉黑</a>';
+                    if(row.blacklist == "正常")
+                        return '<a onclick="blackList(\''+row.wechat_id+'\')">拉黑</a>';
                 }
             }]
         ]
@@ -122,7 +133,8 @@ function blackList(username)
             if(res.code == "0")
             {
                 alert("拉黑成功");
-                getMasterList();
+                var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getMasterList(page-1);
             }
             else
             {
@@ -147,7 +159,8 @@ function beApprentice(username)
             if(res.code == "0")
             {
                 alert("升级成功");
-                getApprenticeList();
+                var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getApprenticeList(page-1);
             }
             else
             {

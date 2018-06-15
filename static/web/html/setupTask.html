@@ -20,9 +20,10 @@
     </style>
 </head>
 <body>
-    <div>
         <div style="margin-bottom:20px">
-            <div>请选择店铺：</div>
+            <div>
+                请选择店铺：<span style="color: red;">*仅平台可见，用户不可见</span>
+            </div>
             <input id="shopList" class="easyui-combobox"
                    name="language"
                    data-options="
@@ -32,36 +33,56 @@
                 " style="width:50%;height:32px">
         </div>
         <div style="margin-bottom: 20px">
-            <div>上传图片：</div>
+            <div>商品首页：</div>
             <!--<input id="images" class="easyui-filebox" accept="image/*" name="file1" data-options="prompt:'请选择图片...'" style="width:50%;height:32px">-->
             <input id="images" type="file" accept="image/*">
         </div>
         <div style="margin-bottom: 20px">
-            <div>关键词：</div>
-            <input id="keyword" class="easyui-textbox" style="width:50%;height:32px">
+            <div>商品全名：<span style="color: red;">*仅平台可见，用户不可见</span></div>
+            <input id="good_name" class="easyui-textbox" style="width:50%;height:32px">
         </div>
         <div style="margin-bottom: 20px">
-            <div>排序方式：</div>
-            <input id="sort" class="easyui-textbox" style="width:50%;height:32px">
+            <div>排序方式：
+                <input type="radio" name="sort" value="综合" checked>综合
+                <input type="radio" name="sort" value="销量">销量
+            </div>
         </div>
         <div style="margin-bottom: 20px">
             <div>价格区间：</div>
-            <input id="price" class="easyui-textbox" style="width:50%;height:32px" data-options="prompt:'按格式100-200填写'">
+            <input id="price1" class="easyui-textbox" style="width:24%;height:32px" >~
+            <input id="price2" class="easyui-textbox" style="width:24%;height:32px" >
         </div>
         <div style="margin-bottom: 20px">
-            <div>付款方式：</div>
-            <input id="pay_method" class="easyui-textbox" style="width:50%;height:32px">
-        </div>
-        <div style="margin-bottom: 20px">
-            <div>具体商品金额：</div>
+            <div>具体商品金额：<span style="color: red;">*仅平台可见，用户不可见</span></div>
             <input id="good_price" class="easyui-numberbox" style="width:50%;height:32px">
         </div>
         <div style="margin-bottom: 20px">
-            <div>商品全名：</div>
-            <input id="good_name" class="easyui-textbox" style="width:50%;height:32px">
+            <div>每单拍<input id="num" class="easyui-textbox" style="width:15%;height:32px" >件</div>
+        </div>
+        <div id="allKey" style="margin-bottom: 20px">
+            <div>
+                搜索关键词：
+                <input name="keyword" class="easyui-textbox" style="width:30%;height:32px">
+                添加<input name="count" class="easyui-numberbox" style="width:10%;height:32px">单
+            </div>
+        </div>
+        <div style="margin-bottom: 20px">
+            <button onclick="addKeyword()">+增加搜索关键词</button>
+        </div>
+        <div style="margin-bottom: 20px">
+            <div style="margin-bottom: 20px">发布时间设置：</div>
+            开始时间<input id="begin_time" class="easyui-datetimebox" style="width:24%;height:32px" >~
+            结束时间<input id="end_time" class="easyui-datetimebox" style="width:24%;height:32px" >
+            总共<span></span>单
+        </div>
+        <div style="margin-bottom: 20px">
+            <div>
+                师傅佣金：<input id="master_money" class="easyui-numberbox" style="width:10%;height:32px">
+                徒弟佣金：<input id="salve_money" class="easyui-numberbox" style="width:10%;height:32px">
+            </div>
         </div>
         <div style="text-align: center;margin-bottom: 20px">
-            <button class="myButton" onclick="setupTask()">创建任务</button>
+            <button class="myButton" onclick="setupTask()">发布任务</button>
         </div>
     </div>
 </body>
@@ -71,5 +92,10 @@
 <script type="text/javascript" src="../js/manageTask.js"></script>
 <script>
     getShopList();
+    function addKeyword()
+    {
+        var html = $('<div>搜索关键词：<input name="keyword" class="easyui-textbox textbox" style="width:30%;height:32px;margin: 5px;">添加<input name="count" class="easyui-numberbox textbox" style="width:10%;height:32px">单 </div>');
+        $("#allKey").append(html);
+    }
 </script>
 </html>

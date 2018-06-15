@@ -84,11 +84,12 @@
                         }
                         if(taskStatus == "任务中")
                         {
+                            var begin_time = changeTime(list[i].begin_time);
+                            var left_time = (list[i].time_left).toFixed(2);
                             var html = $('<div class="weui-cell weui-cell_access" onclick="window.location.href=\'taskDetail.html?id='+list[i].id+'\'">'+
                                     '<div class="weui-cell__bd">'+
-                                    '<div><span style="vertical-align: middle">店铺名称：</span><span>'+list[i].shop+'</span></div>'+
-                                    '<div><span style="vertical-align: middle">商品名称：</span><span>'+list[i].good_name+'</span></div>'+
-                                    '<div><span style="vertical-align: middle">商品价格：</span><span>'+list[i].good_price+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">任务开始时间：</span><span>'+begin_time+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">任务剩余时间：</span><span>'+left_time+'秒</span></div>'+
                                     '<div><span style="vertical-align: middle">关键字：</span><span>'+list[i].keyword+'</span></div>'+
                                     '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+taskStatus+'</span></div>'+
                                     '</div>'+
@@ -96,11 +97,10 @@
                         }
                         else
                         {
+                            var begin_time = changeTime(list[i].begin_time);
                             var html = $('<div class="weui-cell weui-cell_access">'+
                                     '<div class="weui-cell__bd">'+
-                                    '<div><span style="vertical-align: middle">店铺名称：</span><span>'+list[i].shop+'</span></div>'+
-                                    '<div><span style="vertical-align: middle">商品名称：</span><span>'+list[i].good_name+'</span></div>'+
-                                    '<div><span style="vertical-align: middle">商品价格：</span><span>'+list[i].good_price+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">任务开始时间：</span><span>'+begin_time+'</span></div>'+
                                     '<div><span style="vertical-align: middle">关键字：</span><span>'+list[i].keyword+'</span></div>'+
                                     '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+taskStatus+'</span></div>'+
                                     '</div>'+

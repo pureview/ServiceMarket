@@ -21,13 +21,26 @@
             font-size: 1rem;
             color: #9b9b9b;
         }
+        .time{
+            background: #f3e5c8;
+            text-align: center;
+            padding: 5px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 1.5rem;
+            line-height: 1.5rem;
+        }
     </style>
 </head>
 <body>
 <div id="tip"></div>
 <div class="container" id="task">
+    <div class="time">
+        任务剩余时间<span id="left_time" style="color: #000;"></span>
+    </div>
     <input type="hidden" id="user_order_id">
-    <div style="text-align: center;padding: 20px;">
+    <div style="text-align: center;padding: 2.5rem 0 10px 0">
         <div><span >商品首页</span></div>
         <img id="img" style="width: 80%;" onclick="previewImg()">
     </div>
@@ -50,21 +63,13 @@
         <span>排序方式:</span>
         <span id="sort" style="color: #e64340;"></span>
     </div>
-    <!--<div class="flex">-->
-        <!--<span>价格:</span>-->
-        <!--<span id="price" style="color: #e64340;"></span>-->
-    <!--</div>-->
-    <!--<div class="flex">-->
-        <!--<span>店铺名称:</span>-->
-        <!--<span id="shop" style="color: #e64340;"></span>-->
-    <!--</div>-->
     <div class="flex" style="margin-top: 10px">
         <span style="font-size: 1.2rem;color: #000;">请输入店铺名称</span>
     </div>
     <div class="flex">
         <input type="hidden" id="shop" >
         <input type="text" id="userShop" onchange='shopInput()'>
-        <span id="shopTip">验证</span>
+        <span id="shopTip" style="font-weight: bolder">验证</span>
     </div>
     <div class="flex" style="margin-top: 10px">
         <span style="font-size: 1.2rem;color: #000;">请输入价格</span>
@@ -72,7 +77,7 @@
     <div class="flex">
         <input type="hidden" id="price">
         <input type="text" id="userPrice" onchange='priceInput()'>
-        <span id="priceTip">验证</span>
+        <span id="priceTip" style="font-weight: bolder">验证</span>
     </div>
     <div class="flex" style="margin-top: 10px">
         <span style="font-size: 1.2rem;color: #000;">请输入淘宝订单号</span>
@@ -80,8 +85,14 @@
     <div class="flex">
         <input type="text" id="order_id">
     </div>
+    <div class="flex" style="margin-top: 10px">
+        <span style="font-size: 1.2rem;color: #000;">请输入旺旺号</span>
+    </div>
+    <div class="flex">
+        <input type="text" id="wangwang">
+    </div>
     <div class="weui-btn-area" id="upload">
-        <a class="weui-btn weui-btn_primary" style="width:15rem; margin-top: 100px" onclick="uploadTask()" id="showTooltips">提交</a>
+        <a class="weui-btn weui-btn_primary" style="width:15rem; margin-top: 100px; margin-bottom: 5rem" onclick="uploadTask()" id="showTooltips">提交</a>
     </div>
 </div>
 </body>
@@ -94,7 +105,6 @@
     var id = getQueryString("id");
     function getApprenticeTask()
     {
-
             var data = {};
             data["code"] = 8;
             data["wechat_id"] = window.localStorage.getItem("openID");
@@ -115,6 +125,7 @@
                         $("#tip").css("display","none");
                         var taskData = res.data;
                         img = htmlPath+"/"+taskData.task_image;
+                        var time = (taskData.time_left).toFixed(2);
                         $("#img").attr("src",img);
                         $("#good_num").text(taskData.good_num);
                         $("#good_price").text(taskData.price);
@@ -124,6 +135,7 @@
                         $("#shop").text(taskData.shop);
                         var id = getQueryString("id");
                         $("#user_order_id").val(id);
+                        $("#left_time").text(time+"秒");
 
                     }
                     else if(res.code == "255")
@@ -138,12 +150,18 @@
     {
         if(confirm == true && confirmPrice == true && $("#order_id").val() !="")
         {
+
+            var wangwang = $("#wangwang").val();
             var data = {};
             data["code"] = "9";
             data["wechat_id"] = window.localStorage.getItem("openID");
             data["seller_username"] = window.localStorage.getItem("seller_username");
             data["user_order_id"] = $("#user_order_id").val();
             data["order_id"] = $("#order_id").val();
+            if(wangwang != "")
+            {
+                data["wangwang"] = wangwang;
+            }
             console.log(data);
             $.ajax({
                 url: url,
@@ -191,7 +209,7 @@
             else
             {
                 $("#shopTip").text("错误");
-                $("#shopTip").css("color","#999");
+                $("#shopTip").css("color","red");
                 confirm = false;
             }
         }
@@ -217,7 +235,7 @@
             else
             {
                 $("#priceTip").text("错误");
-                $("#priceTip").css("color","#999");
+                $("#priceTip").css("color","red");
                 confirmPrice = false;
             }
         }

@@ -10,17 +10,27 @@
 <body>
 <table id="manageOrder_dg"></table>
 <div id="searchtool" style="padding:5px">
-    <a onclick="dataExcel()" style="margin: 10px">导出</a>
-    <a onclick="passAllOrder()" style="margin: 10px">一键通过</a>
-    <span>订单状态：</span>
-    <select id="status" onchange="getOrderList()">
-        <option value="全部">全部</option>
-        <option value="0">任务进行中</option>
-        <option value="1">任务已提交</option>
-        <option value="2">审核成功</option>
-        <option value="3">审核失败</option>
-        <option value="4">任务失败</option>
-    </select>
+    <span>订单时间：</span>
+    <input id="begin_date" class="easyui-datebox" style="width: 150px;"/>
+    <input id="end_date" class="easyui-datebox" style="width: 150px;"/>
+    <button onclick="getOrderList()" >筛选</button>
+    <button onclick="dataExcel()" >导出</button>
+    <button onclick="passAllOrder()" >一键返现</button>
+    <div style="margin-top: 10px">
+        <span>订单状态：</span>
+        <select id="status" onchange="getOrderList()">
+            <option value="全部">全部</option>
+            <option value="0">任务进行中</option>
+            <option value="1">任务已提交</option>
+            <option value="2">审核成功</option>
+            <option value="3">审核失败</option>
+            <option value="4">任务失败</option>
+        </select>
+        <span>店铺名：</span>
+        <select id="shop" onchange="getOrderList()">
+            <option value="全部">全部</option>
+        </select>
+    </div>
 </div>
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
@@ -32,5 +42,31 @@
 <script type="text/javascript" src="../js/jquery.base64.js"></script>
 <script>
     getOrderList();
+    getShopList();
+    //获取店铺列表
+    function getShopList()
+    {
+        var data = {};
+        data["code"] = 16;
+        data["op"] = 0;
+        data["seller_username"] = window.localStorage.getItem("username");
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                var data = [];
+                if(res.code == "0")
+                {
+                    for(var i=0; i<res.data.length; i++)
+                    {
+                        var html = $('<option value="'+res.data[i].shop+'">'+res.data[i].shop+'</option>');
+                        $("#shop").append(html);
+                    }
+                }
+            }
+        })
+    }
 </script>
 </html>

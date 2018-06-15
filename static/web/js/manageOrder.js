@@ -9,11 +9,16 @@ $(function(){
         fitColumns:true,
         singleSelect:false,
         //onClickCell: onClickCell,
-        pageList : [ 10 ],
-        pageSize: 10,
+        pageList : [ 20 ],
+        pageSize: 20,
         idField : 'id',
         columns:[
             [{
+                field: 'choose',
+                align: 'center',
+                checkbox: true
+            },
+            {
                 field: 'mission_id',
                 title: '任务ID',
                 align: 'center'
@@ -39,6 +44,11 @@ $(function(){
                 align: 'center'
             },
             {
+                field: 'shop',
+                title: '店铺名',
+                align: 'center'
+            },
+            {
                 field: 'keyword',
                 title: '关键词',
                 align: 'center'
@@ -51,12 +61,18 @@ $(function(){
             {
                 field: 'begin_time',
                 title: '任务发布时间',
-                align: 'center'
+                align: 'center',
+                formatter: function(value,row,index){
+                    return change(row.begin_time);
+                }
             },
             {
                 field: 'accept_time',
                 title: '接单时间',
-                align: 'center'
+                align: 'center',
+                formatter: function(value,row,index){
+                    return change(row.accept_time);
+                }
             },
             {
                 field: 'status',
@@ -84,7 +100,7 @@ $(function(){
                 align: 'center',
                 formatter: function(value,row,index){
                     if(row.status == "任务已提交")
-                        return '<a onclick="agreeTask(\''+row.user_order_id+'\')">通过</a> | <a onclick="disagreeTask(\''+row.user_order_id+'\')">拒绝</a>';
+                        return '<a onclick="agreeTask(\''+row.user_order_id+'\')">返现</a> | <a onclick="disagreeTask(\''+row.user_order_id+'\')">拒绝</a>';
                 }
             }]
         ],
@@ -116,20 +132,56 @@ function onClickCell(index, field){
         editIndex = index;
     }
 }
-
+//获取筛选时间
+function getTodayTime(time)
+{
+    if(time == "") {
+        time = new Date();
+    }
+    else{
+        time = new Date(time);
+    }
+    var y = time.getFullYear();
+    var m = time.getMonth()+1;
+    var d = time.getDate();
+    return y+(m<10?('0'+m):m)+(d<10?('0'+d):d)+"-0000";
+}
+function getNextTime(time)
+{
+    if(time == "") {
+        time = new Date();
+        time = new Date(time.setDate(time.getDate()+1));
+    }
+    else{
+        time = new Date(time);
+    }
+    var y = time.getFullYear();
+    var m = time.getMonth()+1;
+    var d = time.getDate();
+    return y+(m<10?('0'+m):m)+(d<10?('0'+d):d)+"-0000";
+}
 //获取订单列表
 function getOrderList(pageNum)
 {
+    var begin_time = getTodayTime($("#begin_date").val());
+    var end_time = getNextTime($("#end_date").val());
     var sift = $("#status").val();
+    var shop =$("#shop").val();
     if(pageNum == null)
         pageNum = 0;
     var data = {};
     data["code"] = "10";
     data["seller_username"] = window.localStorage.getItem("username");
     data["page"] = pageNum;
+    data["begin_time"] = begin_time;
+    data["end_time"] = end_time;
     if(sift != "全部")
     {
         data["sift"] = sift;
+    }
+    if(shop != "全部")
+    {
+        data["shop"] = shop;
     }
     console.log(data);
     $.ajax({
@@ -177,12 +229,14 @@ function agreeTask(id)
             console.log(res);
             if(res.code == "0")
             {
-                getOrderList();
+                var page = $("#manageOrder_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getOrderList(page-1);
             }
             else
             {
                 alert("申请失败");
-                getOrderList();
+                var page = $("#manageOrder_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getOrderList(page-1);
             }
         }
     });
@@ -204,12 +258,14 @@ function disagreeTask(id)
             console.log(res);
             if(res.code == "0")
             {
-                getOrderList();
+                var page = $("#manageOrder_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getOrderList(page-1);
             }
             else
             {
                 alert("申请失败");
-                getOrderList();
+                var page = $("#manageOrder_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getOrderList(page-1);
             }
         }
     });
@@ -218,10 +274,21 @@ function disagreeTask(id)
 
 function dataExcel()
 {
-    //$("#manageOrder_dg").tableExport({type:'excel', separator:';', escape:'false'});
+    var begin_time = getTodayTime($("#begin_date").val());
+    var end_time = getNextTime($("#end_date").val());
+    console.log(begin_time);
+    console.log(end_time);
+    var shop = $("#shop").val();
     var data = {};
     data["code"] = "38";
     data["seller_username"] = window.localStorage.getItem("username");
+    data["begin_time"] = begin_time;
+    data["end_time"] = end_time;
+    if(shop != "全部")
+    {
+        data["shop"] = shop;
+    }
+    console.log(data);
     $.ajax({
         url: url,
         type: 'post',
@@ -240,35 +307,46 @@ function dataExcel()
 
 function passAllOrder()
 {
-    var data = {};
-    data["code"] = "10";
-    data["seller_username"] = window.localStorage.getItem("username");
-    $.ajax({
-        url: url,
-        type: 'post',
-        data: data,
-        success: function(res){
-            res = JSON.parse(res);
-            console.log(res);
-            if(res.code == "0")
-            {
-                var data = res.data;
-                var user_order_id = [];
-                for(var i=0;i<data.length;i++)
-                {
-                    if(data.status == "任务已提交")
-                    {
-                        user_order_id.push(data.user_order_id);
-                        console.log(user_order_id);
-                        for(var j=0;j<user_order_id.length;j++)
-                        {
-                            agreeTask(user_order_id[j]);
-                        }
-                        alert("订单通过成功");
-                        getOrderList();
-                    }
-                }
-            }
+    var rowData = $("#manageOrder_dg").datagrid('getSelections');
+    console.log(rowData);
+    for(var i=0;i<rowData.length;i++){
+        if(rowData[i].status == "任务已提交")
+        {
+            agreeTask(rowData[i].user_order_id);
         }
-    })
+    }
+    var page = $("#manageOrder_dg").datagrid('getPager').data("pagination").options.pageNumber;
+    getOrderList(page-1);
+    //var data = {};
+    //data["code"] = "10";
+    //data["seller_username"] = window.localStorage.getItem("username");
+    //$.ajax({
+    //    url: url,
+    //    type: 'post',
+    //    data: data,
+    //    success: function(res){
+    //        res = JSON.parse(res);
+    //        console.log(res);
+    //        if(res.code == "0")
+    //        {
+    //            var data = res.data;
+    //            var user_order_id = [];
+    //            for(var i=0;i<data.length;i++)
+    //            {
+    //                if(data.status == "任务已提交")
+    //                {
+    //                    user_order_id.push(data.user_order_id);
+    //                    console.log(user_order_id);
+    //                    for(var j=0;j<user_order_id.length;j++)
+    //                    {
+    //                        agreeTask(user_order_id[j]);
+    //                    }
+    //                    alert("订单返现成功");
+    //                    var page = $("#manageOrder_dg").datagrid('getPager').data("pagination").options.pageNumber;
+    //                    getOrderList(page-1);
+    //                }
+    //            }
+    //        }
+    //    }
+    //})
 }

@@ -9,8 +9,8 @@ $(function(){
         fitColumns:true,
         singleSelect:false,
         onClickCell: onClickCell,
-        pageList : [ 10 ],
-        pageSize : 10,
+        pageList : [ 20 ],
+        pageSize : 20,
         idField : 'id',
         columns:[
             [{
@@ -51,7 +51,10 @@ $(function(){
                 title: '操作',
                 align: 'center',
                 formatter: function(value,row,index){
-                    return '<a onclick="agree(\''+row.wechat_id+'\')">通过</a> | <a onclick="disagree(\''+row.wechat_id+'\')">拒绝</a> | <a onclick="newToMaster(\''+row.wechat_id+'\')">升级为师傅</a>';
+                    if(row.role == "审核中" || row.role == "师傅审核完毕")
+                        return '<a onclick="agree(\''+row.wechat_id+'\')">通过</a> | <a onclick="disagree(\''+row.wechat_id+'\')">拒绝</a> | <a onclick="newToMaster(\''+row.wechat_id+'\')">升级为师傅</a>';
+                    else if(row.role == "卖家审核完毕")
+                        return '<a onclick="newToMaster(\''+row.wechat_id+'\')">升级为师傅</a>';
                 }
             }]
         ],
@@ -156,7 +159,8 @@ function agree(username)
             if(res.code == "0")
             {
                 alert("通过申请");
-                getNewList();
+                var page = $("#manageNew_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getNewList(page-1);
             }
             else
             {
@@ -181,7 +185,8 @@ function disagree(username)
             if(res.code == "0")
             {
                 alert("拒绝申请");
-                getMasterList();
+                var page = $("#manageNew_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getMasterList(page-1);
             }
             else
             {
@@ -213,7 +218,8 @@ function newToMaster(id)
             if(res.code == "0")
             {
                 alert("升级成功");
-                getMasterList();
+                var page = $("#manageNew_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getMasterList(page-1);
             }
             else
             {

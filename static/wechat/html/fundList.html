@@ -50,6 +50,7 @@
         <!--</select>-->
         <input id="money" placeholder="请输入提现金额" type="number">
         <a class="weui-btn weui-btn_primary" onclick="getMoney()" style="width:30%;height: 2.5rem;line-height: 2.5rem">提现</a>
+        <div id="time" style="color: red;display:none">提现时间为<span id="start_time"></span><span id="end_time"></span></div>
     </div>
     <div class="weui-cells" id="list">
         <!--<div class="weui-cell weui-cell_access">-->
@@ -84,26 +85,29 @@
             success: function(res){
                 res = JSON.parse(res);
                 console.log(res);
-                var list = res.data;
-                var detail;
-                for(var i=0;i<list.length;i++)
+                if(res.code == 0)
                 {
-                    if(list[i].detail == null)
-                        detail = "";
-                    else
-                        detail = list[i].detail;
-                    var html = $('<div class="weui-cell weui-cell_access">'+
-                                        '<div class="weui-cell__bd">'+
-                                    '<div>'+
-                                    '<span style="vertical-align: middle">'+list[i].detail+'</span>'+
-                                    '<span style="vertical-align: middle;color:red;float:right">'+list[i].cash_op+'</span>'+
-                                    '</div>'+
-                                    '<div><span style="vertical-align: middle; color:#999">剩余金额：</span><span id="master_money" style="vertical-align: middle; color:#999">'+list[i].cash_left+'</span></div>'+
-                            '<div><span style="vertical-align: middle; color:#999">用户名：</span><span id="slave_money" style="vertical-align: middle; color:#999">'+list[i].username+'</span></div>'+
-                            '<div><span id="finish_time" style="vertical-align: middle; color:#999">'+detail+'</span></div>'+
-                            '</div>'+
-                            '</div>');
-                    $("#list").append(html);
+                    var list = res.data;
+                    var detail;
+                    for(var i=0;i<list.length;i++)
+                    {
+                        if(list[i].detail == null)
+                            detail = "";
+                        else
+                            detail = list[i].detail;
+                        var html = $('<div class="weui-cell weui-cell_access">'+
+                                '<div class="weui-cell__bd">'+
+                                '<div>'+
+                                '<span style="vertical-align: middle">'+list[i].detail+'</span>'+
+                                '<span style="vertical-align: middle;color:red;float:right">'+list[i].cash_op+'</span>'+
+                                '</div>'+
+                                '<div><span style="vertical-align: middle; color:#999">剩余金额：</span><span id="master_money" style="vertical-align: middle; color:#999">'+list[i].cash_left+'</span></div>'+
+                                '<div><span style="vertical-align: middle; color:#999">用户名：</span><span id="slave_money" style="vertical-align: middle; color:#999">'+list[i].username+'</span></div>'+
+                                '<div><span id="finish_time" style="vertical-align: middle; color:#999">'+detail+'</span></div>'+
+                                '</div>'+
+                                '</div>');
+                        $("#list").append(html);
+                    }
                 }
             }
         })
@@ -132,6 +136,33 @@
             }
         })
     }
+    //    获取提现时间段
+    function getTime()
+    {
+        var data = {};
+        data["code"] = "32";
+        //data["wechat_id"] = window.localStorage.getItem("openID");
+        data["wechat_id"] = "oWN6I06odGU-NfKEm97hQhuMjuNk";
+        data["seller_username"] = "test";
+        //data["seller_username"] = window.localStorage.getItem("seller_username");
+        console.log(data);
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                alert(res.code);
+                console.log(res);
+                if(res.code == "0")
+                {
+                    $("#time").css("display","block");
+                    $("#start_time").text(res.begin_time);
+                    $("#end_time").text(res.end_time);
+                }
+            }
+        })
+    }
 //    提现
     function getMoney()
     {
@@ -154,7 +185,8 @@
             }
         })
     }
-    getUserFund();
-    getFundList();
+    getTime();
+//    getUserFund();
+//    getFundList();
 </script>
 </html>

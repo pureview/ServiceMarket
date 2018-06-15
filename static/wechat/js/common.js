@@ -56,5 +56,37 @@ function getTips()
         }
     })
 }
+//刷新获取任务
+function refresh()
+{
+    var data = {};
+    data["code"] = 39;
+    data["wechat_id"] = window.localStorage.getItem("openID");
+    data["seller_username"] = window.localStorage.getItem("seller_username");
+    console.log(data);
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: data,
+        success: function(res){
+            res = JSON.parse(res);
+            console.log(res);
+            if(res.message == "申请任务")
+                $("#msg").text("您获取一个任务，请“点我”进行任务");
+            else
+                $("#msg").text(res.message);
+        }
+    });
+}
 
+function changeTime(datetime)
+{
+
+    var y = datetime.slice(0,4);
+    var m = datetime.slice(4,6);
+    var d = datetime.slice(6,8);
+    var h = datetime.slice(9,11);
+    var n = datetime.slice(11);
+    return y+"-"+m+"-"+d+" "+h+":"+n;
+}
 

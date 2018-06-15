@@ -14,6 +14,14 @@
 </head>
 <body>
 <table id="manageTask_dg"></table>
+<div id="searchtool" style="padding:5px">
+    <button onclick="lanchTask()">发布任务</button>
+    <span>开始时间：</span><input id="begin_date" class="easyui-datetimebox" style="width: 150px;"/>
+    <span>结束时间：</span><input id="end_date" class="easyui-datetimebox" style="width: 150px;"/>
+    <span>师傅佣金：</span><input id="mmaster_money" type="number">
+    <span>徒弟佣金：</span><input id="salve_money" type="number">
+    <div style="color: red">*红色部分为可修改数据</div>
+</div>
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>

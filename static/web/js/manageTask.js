@@ -10,34 +10,27 @@ $(function(){
         singleSelect:false,
         nowrap:true,
         onClickCell: onClickCell,
-        pageList : [ 10],
-        pageSize: 10,
+        pageList : [ 20],
+        pageSize: 20,
         idField : 'id',
         columns:[
-            //[{
-            //    field: 'choose',
-            //    align: 'center',
-            //    checkbox: true,
-            //    formatter: function(value,row,index){
-            //        console.log(row);
-            //        if(row.status == "1")//0为未发布
-            //            //$("input[type='checkbox']")[index].disabled = true;
-            //            //dg.row.ReadOnly = true;
-            //            return 'col';
-            //    }
-            //},
             [{
                 field: 'choose',
-                //title: '<input id="check_all" type="checkbox">',
                 align: 'center',
-                formatter: function(value,row,index){
-                    //console.log(row);
-                    if(row.status == "1")//0为未发布
-                        return '<input type="checkbox" disabled>';
-                    else
-                        return '<input name="check_input" type="checkbox" onclick="getRowData(\''+row+'\',\''+row.id+'\')">';
-                }
+                checkbox: true
             },
+            //[{
+            //    field: 'choose',
+            //    //title: '<input id="check_all" type="checkbox">',
+            //    align: 'center',
+            //    formatter: function(value,row,index){
+            //        //console.log(row);
+            //        if(row.status == "1")//0为未发布
+            //            return '<input type="checkbox" disabled>';
+            //        else
+            //            return '<input name="check_input" type="checkbox" onclick="getRowData(\''+row+'\',\''+row.id+'\')">';
+            //    }
+            //},
             {
                 field: 'status',
                 title: '任务状态',
@@ -46,7 +39,7 @@ $(function(){
                     if(value == 0)
                         return "未发布";
                     else if(value == 1)
-                        return "<span style='color:red'>已发布</span>";
+                        return "<span style='color:green'>已发布</span>";
                 }
             },
             {
@@ -74,17 +67,36 @@ $(function(){
                 title: '商品全名',
                 align: 'center'
             },
+
             {
                 field: 'good_price',
                 title: '价格',
                 align: 'center'
             },
+
             {
-                field: 'taskNum',
+                field: 'begin_time',
+                title: '开始时间',
+                align: 'center',
+                formatter: function(value,row,index){
+                    return change(row.begin_time);
+                }
+            },
+
+            {
+                field: 'end_time',
+                title: '结束时间',
+                align: 'center',
+                formatter: function(value,row,index){
+                    return change(row.end_time);
+                }
+            },
+            {
+                field: 'mission_num',
                 title: '任务数量',
                 align: 'center',
                 formatter: function(value,row,index){
-                    return "1000";
+                    return "<span style='color: red'>"+row.mission_num+"</span>";
                 },
                 editor: {
                     type: 'validatebox',
@@ -95,11 +107,11 @@ $(function(){
                 }
             },
             {
-                field: 'count',
+                field: 'good_num',
                 title: '商品数量',
                 align: 'center',
                 formatter: function(value,row,index){
-                    return "100";
+                    return "<span style='color: red'>"+row.good_num+"</span>";
                 },
                 editor: {
                     type: 'validatebox',
@@ -109,74 +121,51 @@ $(function(){
                     }
                 }
             },
+            //{
+            //    field: 'master',
+            //    title: '师父佣金',
+            //    align: 'center',
+            //    formatter: function(value,row,index){
+            //            return "3";
+            //    },
+            //    editor: {
+            //        type: 'validatebox',
+            //        options: {
+            //            required: true,
+            //            missingMessage: '请输入师父佣金'
+            //        }
+            //    }
+            //},
+            //{
+            //    field: 'apprentice',
+            //    title: '徒弟佣金',
+            //    align: 'center',
+            //    formatter: function(value,row,index){
+            //        return "<span style='color: red;'>3</span>";
+            //    },
+            //    editor: {
+            //        type: 'validatebox',
+            //        options: {
+            //            required: true,
+            //            missingMessage: '请输入徒弟佣金'
+            //        }
+            //    }
+            //},
             {
-                field: 'startTime',
-                title: '开始时间',
-                align: 'center',
-                formatter: myformatter,
-                editor: {
-                    type: 'datetimebox',
-                    options: {
-                        required: true,
-                        missingMessage:'请选择开始时间'
-                    }
-                }
-            },
-            {
-                field: 'endTime',
-                title: '结束时间',
-                align: 'center',
-                formatter: myformatter,
-                editor: {
-                    type: 'datetimebox',
-                    options: {
-                        required: true,
-                        missingMessage: '请选择结束时间'
-                    }
-                }
-            },
-            {
-                field: 'master',
-                title: '师父佣金',
-                align: 'center',
-                formatter: function(value,row,index){
-                    return "3";
-                },
-                editor: {
-                    type: 'validatebox',
-                    options: {
-                        required: true,
-                        missingMessage: '请输入师父佣金'
-                    }
-                }
-            },
-            {
-                field: 'apprentice',
-                title: '徒弟佣金',
-                align: 'center',
-                formatter: function(value,row,index){
-                    return "3";
-                },
-                editor: {
-                    type: 'validatebox',
-                    options: {
-                        required: true,
-                        missingMessage: '请输入徒弟佣金'
-                    }
-                }
-            },
-            {
-                field: 'relation',
+                field: 'allow',
                 title: '选择',
                 width: '10%',
                 align: 'center',
                 formatter: function(value,row,index){
-                    return "全部";
+                    if(row.allow == "0" || row.allow == "全部")
+                        return "<span style='color: red;'>全部</span>";
+                    else if(row.allow == "师傅")
+                        return "<span style='color: red;'>师傅</span>";
                 },
                 editor: {
                     type: 'combobox',
                     options: {
-                        data: [{value:'全部',text:'全部'},{value:'师父',text:'师父'}],
+                        data: [{value:'全部',text:'全部'},{value:'师傅',text:'师傅'}],
                         valueFiled: 'value',
                         textFiled: 'text',
                         panelHeight: 'auto',
@@ -190,24 +179,14 @@ $(function(){
                 title: '操作',
                 align: 'center',
                 formatter: function(value,row,index){
-                    //console.log(row);
                     if(row.status == "1")// 0为未发布
                         return '<a onclick="cancelTask(\''+row.id+'\')">取消任务</a>';
                 }
             }]
         ],
-        toolbar: [
-            //{
-            //    text: '保存编辑',
-            //    iconCls: 'icon-save'
-            //},
-            {
-                text: '发布任务',
-                handler: lanchTask
-            }
-        ]
+        toolbar: "#searchtool"
     });
-    $('#manageTask_dg').datagrid('getPager').pagination({
+    dg.datagrid('getPager').pagination({
         displayMsg:'当前显示第 {from}-{to} 条记录 ， 共 {total} 条记录',
         onSelectPage:function(pageNumber){
             getTaskList(pageNumber-1);
@@ -262,17 +241,17 @@ function onClickCell(index, field){
 //设置时间格式
 function myformatter(date){
     date= new Date(Date.parse(date));
-    if(date == 'Invalid Date')
-        return changeTime(new Date());
-    else
-    {
+    //if(date == 'Invalid Date')
+    //    return changeTime(new Date());
+    //else
+    //{
         var y = date.getFullYear();
         var m = date.getMonth()+1;
         var d = date.getDate();
         var h = date.getHours();
         var n = date.getMinutes();
-        return y+(m<10?('0'+m):m)+(d<10?('0'+d):d)+'-'+(h<10?('0'+h):h)+(n<10?('0'+n):n);
-    }
+        return y+"/"+(m<10?('0'+m):m)+"/"+(d<10?('0'+d):d)+'-'+(h<10?('0'+h):h)+":"+(n<10?('0'+n):n);
+    //}
 }
 
 //checkbox全选
@@ -317,6 +296,9 @@ function getShopList()
 //创建任务
 function setupTask()
 {
+    var price1 = $("#price1").val();
+    var price2 = $("#price2").val();
+    var price = price1+"-"+price2;
     var data = new FormData();
     data.append("code","0");
     data.append("shop",$("#shopList").val());
@@ -324,7 +306,7 @@ function setupTask()
     data.append("images",document.getElementById("images").files[0]);
     data.append("keyword",$("#keyword").val());
     data.append("sort",$("#sort").val());
-    data.append("price",$("#price").val());
+    data.append("price",price);
     data.append("pay_method",$("#pay_method").val());
     data.append("good_price",$("#good_price").val());
     data.append("good_name",$("#good_name").val());
@@ -344,7 +326,8 @@ function setupTask()
                 $("#images").val("");
                 $("#keyword").textbox("setValue","");
                 $("#sort").textbox("setValue","");
-                $("#price").textbox("setValue","");
+                $("#price1").textbox("setValue","");
+                $("#price2").textbox("setValue","");
                 $("#pay_method").textbox("setValue","");
                 $("#good_price").numberbox("setValue","");
                 $("#good_name").textbox("setValue","");
@@ -395,80 +378,57 @@ function getRowData(row,id)
 //发布任务
 function lanchTask()
 {
-    console.log(mission_id);
-    //var rowData = $("#manageTask_dg").datagrid('getSelections');
-    //for(var i = 0; i<rowData.length;i++)
-    //{
-        var mission_class = mission_id;
-        //var begin_time = changeTime(rowData[i].startTime);
-        //var end_time = changeTime(rowData[i].endTime);
-        var begin_time;
-        var end_time;
-        var master_money = rowData.master;
-        var salve_money = rowData.apprentice;
-        var good_num = rowData.count;
-        var mission_num = rowData.taskNum;
-        var allow;
-        if(rowData.startTime == undefined)
+    var rowData = $("#manageTask_dg").datagrid('getSelections');
+    for(var i = 0; i<rowData.length;i++)
+    {
+        if(rowData[i].status == 0)
         {
-            begin_time = changeTime(new Date());
-        }
-        if(rowData.endTime == undefined)
-        {
-            end_time = changeTime(new Date());
-        }
-        if(rowData.relation == undefined)
-        {
-            allow = 0;
-        }
-        else
-        {
-            if(rowData.relation == "全部")
-                allow = 0;
-            else if(rowData.relation == "师父")
-                allow = 1;
-        }
-        if(master_money == undefined)
-            master_money = "3";
-        if(salve_money == undefined)
-            salve_money = "3";
-        if(good_num == undefined)
-            good_num = "100";
-        if(mission_num == undefined)
-            mission_num = "1000";
-        var data = {};
-        data["code"] = 1;
-        data["mission_class"] = mission_class;//任务id
-        data["begin_time"] = begin_time;
-        data["end_time"] = end_time;
-        data["master_money"] = master_money;
-        data["slave_money"] = salve_money;
-        data["allow"] = allow; //0全部 1师父
-        data["good_num"] = good_num;
-        data["mission_num"] = mission_num;
-        data["seller_username"] = window.localStorage.getItem("username");
-        console.log(data);
-        $.ajax({
-            url: url,
-            type: 'post',
-            data: data,
-            success: function(res)
-            {
-                res = JSON.parse(res);
-                if(res.code == "0")
+            var mission_class = rowData[i].id;
+            var begin_time;
+            var end_time;
+            var master_money = $("#mmaster_money").val();
+            var salve_money = $("#salve_money").val();
+            var good_num = rowData[i].good_num;
+            var mission_num = rowData[i].mission_num;
+            var allow = rowData[i].allow;
+            var begin_time = changeTime($("#begin_date").val());
+            var end_time = changeTime($("#end_date").val());
+            var data = {};
+            data["code"] = 1;
+            data["mission_class"] = mission_class;//任务id
+            data["begin_time"] = begin_time;
+            data["end_time"] = end_time;
+            data["master_money"] = master_money;
+            data["slave_money"] = salve_money;
+            data["allow"] = allow; //0全部 1师父
+            data["good_num"] = good_num;
+            data["mission_num"] = mission_num;
+            data["seller_username"] = window.localStorage.getItem("username");
+            console.log(data);
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: data,
+                success: function(res)
                 {
-                    alert("发布成功");
-                    $("#manageTask_dg").html("");
-                    getTaskList();
+                    res = JSON.parse(res);
+                    if(res.code == "0")
+                    {
+                        //alert("发布成功");
+                        $("#manageTask_dg").html("");
+                        var page = $("#manageTask_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                        getTaskList(page-1);
+                    }
+                    else
+                    {
+                        alert("发布失败");
+                        var page = $("#manageTask_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                        getTaskList(page-1);
+                    }
                 }
-                else
-                {
-                    alert("发布失败");
-                    getTaskList();
-                }
-            }
-        });
-    //}
+            });
+        }
+    }
 }
 
 //取消任务
@@ -488,8 +448,15 @@ function cancelTask(id)
             if(res.code == "0")
             {
                 alert("取消成功");
-                lanchTask();
+                var page = $("#manageTask_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getTaskList(page-1);
             }
         }
     })
+}
+
+function getThisValue(index)
+{
+    var editors = $('#manageTask_dg').datagrid('getEditors', index);
+    console.info(editors[8]);
 }

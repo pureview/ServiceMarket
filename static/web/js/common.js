@@ -62,6 +62,7 @@ function openTab(title,id,url)
             title : title,
             closable : true,
             content : content
+            //tools: '#tool'
         });
     }
 }
@@ -75,4 +76,23 @@ function changeTime(datetime)
     var h = datetime.getHours();
     var n = datetime.getMinutes();
     return y+(m<10?('0'+m):m)+(d<10?('0'+d):d)+'-'+(h<10?('0'+h):h)+(n<10?('0'+n):n);
+}
+
+function change(datetime)
+{
+
+    var y = datetime.slice(0,4);
+    var m = datetime.slice(4,6);
+    var d = datetime.slice(6,8);
+    var h = datetime.slice(9,11);
+    var n = datetime.slice(11);
+    return y+"-"+m+"-"+d+" "+h+":"+n;
+}
+
+function freshTab(){
+    //获得当前选中的tab
+    var tab = $("#tabs").tabs("getSelected");
+    //获得当前选中的tab 的href
+    var url = $($(tab.panel("options"))[0].content).attr("src");
+    tab.panel("refresh", url);
 }

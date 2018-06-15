@@ -17,50 +17,72 @@
             border-radius: 10px;
             box-shadow: 5px 5px 2px #ccc;
         }
+        #refresh{
+            border: 1px solid #ccc;
+            padding: 5px 10px 5px 10px;
+            border-radius: 5px;
+            background: #1aad19;
+            color: #fff;
+            margin: 10px 10px 0 10px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <!--<div class="weui-cells" style="margin-top:10px">-->
-        <!--<div class="weui-cell weui-cell_access" onclick="window.location.href='taskDetail.html';">-->
-            <!--<div class="weui-cell__bd">-->
-                <!--<div><span style="vertical-align: middle">任务名称</span></div>-->
-                <!--<div><span style="vertical-align: middle; color:#999">2018-2-12 13:00:00</span></div>-->
-            <!--</div>-->
-            <!--<div class="weui-cell__ft"></div>-->
-        <!--</div>-->
-        <!--<div class="weui-cell weui-cell_access" onclick="window.location.href='taskDetail.html';">-->
-            <!--<div class="weui-cell__bd">-->
-                <!--<div><span style="vertical-align: middle">任务名称</span></div>-->
-                <!--<div><span style="vertical-align: middle; color:#999">2018-2-12 13:00:00</span></div>-->
-            <!--</div>-->
-            <!--<div class="weui-cell__ft"></div>-->
-        <!--</div>-->
-        <!--<div class="weui-cell weui-cell_access" onclick="window.location.href='taskDetail.html';">-->
-            <!--<div class="weui-cell__bd">-->
-                <!--<div><span style="vertical-align: middle">任务名称</span></div>-->
-                <!--<div><span style="vertical-align: middle; color:#999">2018-2-12 13:00:00</span></div>-->
-            <!--</div>-->
-            <!--<div class="weui-cell__ft"></div>-->
-        <!--</div>-->
-    <!--</div>-->
     <div class="tips">
         <div style="text-align: center"><p style="font-size: 1.3rem">公告</p></div>
         <span id="tips">测试测试测试</span>
     </div>
+    <div style="background: #fff;height:100px;padding: 10px;">
+        <div style="float: right"><a id="refresh" onclick="refresh()">刷新任务</a></div>
+        <div style="margin-top:35px"><span id="msg" style="color:red" onclick="toTaskDetail()">请刷新申请任务</span></div>
+    </div>
+    <!--<div id="tasking" class="weui-cells" style="margin-top:10px;display: none">-->
+        <!--<div class="weui-cell weui-cell_access">-->
+            <!--<div class="weui-cell__bd">-->
+                <!--<div style="padding: 5px;">-->
+                    <!--<div>-->
+                        <!--<span style="vertical-align: middle; color:#999">商品名称：</span>-->
+                        <!--<span style="vertical-align: middle; color:#999" id="good_name"></span>-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<span style="vertical-align: middle; color:#999">商品数量：</span>-->
+                        <!--<span style="vertical-align: middle; color:#999" id="good_num"></span>-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<span style="vertical-align: middle; color:#999">商品价格：</span>-->
+                        <!--<span style="vertical-align: middle; color:#999" id="good_price"></span>-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<span style="vertical-align: middle; color:#999">关键词：</span>-->
+                        <!--<span style="vertical-align: middle; color:#999" id="keyword"></span>-->
+                    <!--</div>-->
+                    <!--<div style="float: right">-->
+                        <!--<a onclick="window.location.href='taskDetail.html';">申请任务 >></a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
     <div class="weui-cells" style="margin-top:10px;position:sticky; position:-webkit-sticky;bottom:0;">
+        <div class="weui-cell weui-cell_access">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">我的账号</span>
+                <span id="id" style="float: right;color: #999;"></span>
+            </div>
+        </div>
         <div class="weui-cell weui-cell_access" onclick="window.location.href='teach.html';">
             <div class="weui-cell__bd">
                 <span style="vertical-align: middle">新手教程</span>
             </div>
             <div class="weui-cell__ft"></div>
         </div>
-        <div class="weui-cell weui-cell_access" onclick="window.location.href='taskDetail.html';">
-            <div class="weui-cell__bd">
-                <span style="vertical-align: middle">申请任务</span>
-            </div>
-            <div class="weui-cell__ft"></div>
-        </div>
+        <!--<div class="weui-cell weui-cell_access" onclick="window.location.href='taskDetail.html';">-->
+            <!--<div class="weui-cell__bd">-->
+                <!--<span style="vertical-align: middle">申请任务</span>-->
+            <!--</div>-->
+            <!--<div class="weui-cell__ft"></div>-->
+        <!--</div>-->
         <div class="weui-cell weui-cell_access" onclick="window.location.href='fundList.html';">
             <div class="weui-cell__bd">
                 <span style="vertical-align: middle">我的资金</span>
@@ -101,6 +123,16 @@
     window.addEventListener('popstate', function () {
         history.pushState(null, null, document.URL);
     });
+    refresh();
     getTips();
+    function toTaskDetail()
+    {
+        var msg = $("#msg").text();
+        if(msg == "您获取一个任务，请“点我”进行任务")
+        {
+            window.location.href="taskDetail.html";
+        }
+    }
+    $("#id").text(getQueryString("id"));
 </script>
 </html>

@@ -57,8 +57,10 @@
                     var list = res.data;
                     for(var i=0;i<list.length;i++)
                     {
-                        var html = ('<div class="weui-form-preview" style="margin-top:15px">'+
-                        '<div class="weui-form-preview__bd">'+
+                        if(list[i].role == "审核中" || list[i].role == "卖家审核完毕")
+                        {
+                            var html = ('<div class="weui-form-preview" style="margin-top:15px">'+
+                            '<div class="weui-form-preview__bd">'+
                             '<div class="weui-form-preview__item">'+
                             '<label class="weui-form-preview__label">介绍人ID</label>'+
                             '<span class="weui-form-preview__value">'+list[i].inviter_id+'</span>'+
@@ -77,7 +79,8 @@
                             '<a class="weui-form-preview__btn weui-form-preview__btn_default" onclick="disagree(\''+list[i].id+'\')">不通过</a>'+
                             '</div>'+
                             '</div>');
-                        $("#list").append(html);
+                            $("#list").append(html);
+                        }
                     }
                 }
             }

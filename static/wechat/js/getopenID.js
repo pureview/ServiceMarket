@@ -53,19 +53,21 @@ function getUserRole()
         dataType:'JSON',
         data: role_data,
         success: function(res){
+            var id = res.id;
+            window.localStorage.setItem("id",id);
             if(res.code == "1")
             {
-                window.location.href = htmlPath+"/static/wechat/html/newStatus.html";
+                window.location.href = htmlPath+"/static/wechat/html/newStatus.html?id="+id;
             }
             else if(res.code == "0")
             {
                 if(res.master == false)
                 {
-                    window.location.href = htmlPath+"/static/wechat/html/apprentice.html";
+                    window.location.href = htmlPath+"/static/wechat/html/apprentice.html?id="+id;
                 }
                 else
                 {
-                    window.location.href = htmlPath+"/static/wechat/html/master.html";
+                    window.location.href = htmlPath+"/static/wechat/html/master.html?id="+id;
                 }
             }
         }

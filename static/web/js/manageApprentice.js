@@ -9,7 +9,7 @@ $(function(){
         fitColumns:true,
         singleSelect:false,
         onClickCell: onClickCell,
-        pageList : [ 5, 10, 15, 20 ],
+        pageList : [ 20 ],
         idField : 'id',
         columns:[
             [{
@@ -35,6 +35,11 @@ $(function(){
             {
                 field: 'create_date',
                 title: '注册时间',
+                align: 'center'
+            },
+            {
+                field: 'phone',
+                title: '手机号',
                 align: 'center'
             },
             {
@@ -121,6 +126,7 @@ function blackList(username)
     var data = {};
     data["code"] = 22;
     data["wechat_id"] = username;
+    data["seller_username"] = window.localStorage.getItem("username");
     $.ajax({
         url: url,
         type: 'post',
@@ -131,7 +137,8 @@ function blackList(username)
             if(res.code == "0")
             {
                 alert("拉黑成功");
-                getApprenticeList();
+                var page = $("#manageApprentice_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getApprenticeList(page-1);
             }
             else
             {
@@ -146,6 +153,7 @@ function beMaster(username)
     var data = {};
     data["code"] = 26;
     data["wechat_id"] = username;
+    data["seller_username"] = window.localStorage.getItem("username");
     $.ajax({
         url: url,
         type: 'post',
@@ -156,7 +164,8 @@ function beMaster(username)
             if(res.code == "0")
             {
                 alert("升级成功");
-                getApprenticeList();
+                var page = $("#manageApprentice_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getApprenticeList(page-1);
             }
             else
             {

@@ -14,8 +14,8 @@ $(function(){
         nowrap:true,
         loadMsg: '正在加载信息.......',
         onClickCell: onClickCell,
-        pageList : [ 10 ],
-        pageSize: 10,
+        pageList : [ 20 ],
+        pageSize: 20,
         idField : 'id',
         columns:[
             [{
