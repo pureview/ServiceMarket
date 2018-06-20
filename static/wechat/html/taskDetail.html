@@ -105,46 +105,46 @@
     var id = getQueryString("id");
     function getApprenticeTask()
     {
-            var data = {};
-            data["code"] = 8;
-            data["wechat_id"] = window.localStorage.getItem("openID");
-            data["seller_username"] = window.localStorage.getItem("seller_username");
-            if(id != undefined)
-                data["id"] = id;
-            console.log(data);
-            $.ajax({
-                url: url,
-                type: 'post',
-                data: data,
-                success: function(res){
-                    res = JSON.parse(res);
-                    console.log(res);
-                    if(res.code == "0")
-                    {
-                        $("#task").css("display","block");
-                        $("#tip").css("display","none");
-                        var taskData = res.data;
-                        img = htmlPath+"/"+taskData.task_image;
-                        var time = (taskData.time_left).toFixed(2);
-                        $("#img").attr("src",img);
-                        $("#good_num").text(taskData.good_num);
-                        $("#good_price").text(taskData.price);
-                        $("#keyword").text(taskData.keyword);
-                        $("#sort").text(taskData.sort);
-                        $("#price").text(taskData.good_price);
-                        $("#shop").text(taskData.shop);
-                        var id = getQueryString("id");
-                        $("#user_order_id").val(id);
-                        $("#left_time").text(time+"秒");
+        var data = {};
+        data["code"] = 8;
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        //data["wechat_id"] = "oWN6I06odGU-NfKEm97hQhuMjuNk";
+        data["seller_username"] = window.localStorage.getItem("seller_username");
+        data["mission_id"] = id;
+        console.log(data);
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == "0")
+                {
+                    $("#task").css("display","block");
+                    $("#tip").css("display","none");
+                    var taskData = res.data;
+                    img = htmlPath+"/"+taskData.task_image;
+                    var time = (taskData.time_left).toFixed(2);
+                    $("#img").attr("src",img);
+                    $("#good_num").text(taskData.good_num);
+                    $("#good_price").text(taskData.price_lower+"-"+taskData.price_higher);
+                    $("#keyword").text(taskData.keyword);
+                    $("#sort").text(taskData.sort);
+                    $("#price").text(taskData.good_price);
+                    $("#shop").text(taskData.shop);
+                    var id = getQueryString("id");
+                    $("#user_order_id").val(id);
+                    $("#left_time").text(time+"秒");
 
-                    }
-                    else if(res.code == "255")
-                    {
-                        $("#task").css("display","none");
-                        $("#tip").text(res.message);
-                    }
                 }
-            });
+                else if(res.code == "255")
+                {
+                    $("#task").css("display","none");
+                    $("#tip").text(res.message);
+                }
+            }
+        });
     }
     function uploadTask()
     {

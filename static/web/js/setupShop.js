@@ -13,7 +13,6 @@ $(function(){
         singleSelect:false,
         nowrap:true,
         loadMsg: '正在加载信息.......',
-        onClickCell: onClickCell,
         pageList : [ 20 ],
         pageSize: 20,
         idField : 'id',
@@ -24,35 +23,30 @@ $(function(){
                 width: '50%',
                 align: 'center'
             },
-            {
-                field: 'mission_interval',
-                title: '任务时间间隔',
-                width: '30%',
-                align: 'center',
-                editor: {
-                    type: 'validatebox',
-                    options:{
-                        required: true,
-                        missingMessage:'请填写任务间隔'
-                    }
-                }
-            },
+            //{
+            //    field: 'mission_interval',
+            //    title: '任务时间间隔',
+            //    width: '30%',
+            //    align: 'center',
+            //    editor: {
+            //        type: 'validatebox',
+            //        options:{
+            //            required: true,
+            //            missingMessage:'请填写任务间隔'
+            //        }
+            //    }
+            //},
             {
                 field: 'operate',
                 title: '操作',
                 width: '20%',
                 align: 'center',
                 formatter: function(value,row,index){
-                    return '<a onclick="deleteShop(\''+row.shop+'\')">删除</a> | <a onclick="updateShop(\''+row.shop+'\',\''+row.mission_interval+'\')">保存</a>';
+                    return '<button onclick="deleteShop(\''+row.shop+'\')">删除</button>';
                 }
             }]
         ],
         toolbar: "#span"
-            //{
-            //    text: '添加店铺',
-            //    iconCls: 'icon-add',
-            //    handler: openWindow
-            //},
 
     });
     $('#setupShop_dg').datagrid('getPager').pagination({
@@ -62,77 +56,45 @@ $(function(){
         }
     });
 });
-//设置单元格可编辑
-$.extend($.fn.datagrid.methods, {
-    editCell: function(jq,param){
-        return jq.each(function(){
-            var opts = $(this).datagrid('options');
-            var fields = $(this).datagrid('getColumnFields',true).concat($(this).datagrid('getColumnFields'));
-            for(var i=0; i<fields.length; i++){
-                var col = $(this).datagrid('getColumnOption', fields[i]);
-                col.editor1 = col.editor;
-                if (fields[i] != param.field){
-                    col.editor = null;
-                }
-            }
-            $(this).datagrid('beginEdit', param.index);
-            for(var i=0; i<fields.length; i++){
-                var col = $(this).datagrid('getColumnOption', fields[i]);
-                col.editor = col.editor1;
-            }
-        });
-    }
-});
-var editIndex = undefined;
-function endEditing(){
-    if (editIndex == undefined){return true}
-    if ($('#setupShop_dg').datagrid('validateRow', editIndex)){
-        $('#setupShop_dg').datagrid('endEdit', editIndex);
-        editIndex = undefined;
-        return true;
-    } else {
-        return false;
-    }
-}
-function onClickCell(index, field){
-    if (endEditing()){
-        $('#setupShop_dg').datagrid('selectRow', index)
-            .datagrid('editCell', {index:index,field:field});
-        editIndex = index;
-    }
-}
 
 function openWindow()
 {
     $("#shopName").textbox("setValue","");
-    $("#interval").numberbox("setValue","");
+    //$("#interval").numberbox("setValue","");
     $("#addShop").window('open');
 }
 //添加店铺
 function addShop()
 {
-    var data = {};
-    data["code"] = 16;
-    data["op"] = 1;
-    data["seller_username"] = window.localStorage.getItem("username");
-    data["shop_name"] = $("#shopName").val();
-    data["interval"] = $("#interval").val();
-    $.ajax({
-        url: url,
-        type: 'post',
-        data: data,
-        success: function(res){
-            res = JSON.parse(res);
-            if(res.code == "0")
-            {
-                $("#addShop").window('close');
-                allShopList();
-                alert("添加店铺成功");
+    if($("#shopName").val() != "")
+    {
+        var data = {};
+        data["code"] = 16;
+        data["op"] = 1;
+        data["seller_username"] = window.localStorage.getItem("username");
+        data["shop_name"] = $("#shopName").val();
+        //data["interval"] = $("#interval").val();
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                if(res.code == "0")
+                {
+                    $("#addShop").window('close');
+                    allShopList();
+                    alert("添加店铺成功");
+                }
+                else
+                    alert("添加失败，请重新添加");
             }
-            else
-                alert("添加失败，请重新添加");
-        }
-    })
+        })
+    }
+    else
+    {
+        alert('请输入店铺名称');
+    }
 }
 //查询店铺
 function allShopList()

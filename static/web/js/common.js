@@ -11,38 +11,13 @@ url=basePath+"/mission";
 htmlPath = window.location.protocol+"//"+window.location.host+":80";
 //url="http://taobaoshare.cn:8080/mission";
 
-//用户登录
-function login()
-{
-    var username = $("#username").val();
-    var password = $("#password").val();
-    var data = {};
-    data["code"] = "28";
-    data["seller_username"]=username;
-    data["passwd"] = password;
-    $.ajax({
-        url: url,
-        type: 'post',
-        data: data,
-        success: function(res){
-            res = JSON.parse(res);
-            if(res.code == '0')
-            {
-                window.location.href="index.html";
-                window.localStorage.setItem("username",username);
-                window.localStorage.setItem("password",password);
-            }
-            else{
-                alert("登录失败");
-            }
-        }
-    })
-}
-//忘记密码
-function forgetPWD(username)
-{
-
-}
+$(function(){
+    var username = window.getCookie("username");
+    if(username == null)
+    {
+        parent.window.location.href = htmlPath + "/static/web/html/login.html";
+    }
+});
 
 
 //在右侧打开tab选项
@@ -81,12 +56,42 @@ function changeTime(datetime)
 function change(datetime)
 {
 
-    var y = datetime.slice(0,4);
-    var m = datetime.slice(4,6);
-    var d = datetime.slice(6,8);
-    var h = datetime.slice(9,11);
-    var n = datetime.slice(11);
+    var y = datetime.toString().slice(0,4);
+    var m = datetime.toString().slice(4,6);
+    var d = datetime.toString().slice(6,8);
+    var h = datetime.toString().slice(9,11);
+    var n = datetime.toString().slice(11);
     return y+"-"+m+"-"+d+" "+h+":"+n;
+}
+
+//获取筛选时间
+function getTodayTime(time)
+{
+    //if(time == "") {
+    //    time = new Date();
+    //}
+    //else{
+    //    time = new Date(time);
+    //}
+    time = new Date(time);
+    var y = time.getFullYear();
+    var m = time.getMonth()+1;
+    var d = time.getDate();
+    return y+(m<10?('0'+m):m)+(d<10?('0'+d):d)+"-0000";
+}
+function getNextTime(time)
+{
+    if(time == "") {
+        time = new Date();
+        time = new Date(time.setDate(time.getDate()+1));
+    }
+    else{
+        time = new Date(time);
+    }
+    var y = time.getFullYear();
+    var m = time.getMonth()+1;
+    var d = time.getDate();
+    return y+(m<10?('0'+m):m)+(d<10?('0'+d):d)+"-0000";
 }
 
 function freshTab(){
@@ -95,4 +100,15 @@ function freshTab(){
     //获得当前选中的tab 的href
     var url = $($(tab.panel("options"))[0].content).attr("src");
     tab.panel("refresh", url);
+}
+
+function getCookie(name)
+{
+    var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+
+    if(arr=document.cookie.match(reg))
+
+        return unescape(arr[2]);
+    else
+        return null;
 }

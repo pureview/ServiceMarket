@@ -50,7 +50,7 @@
         <!--</select>-->
         <input id="money" placeholder="请输入提现金额" type="number">
         <a class="weui-btn weui-btn_primary" onclick="getMoney()" style="width:30%;height: 2.5rem;line-height: 2.5rem">提现</a>
-        <div id="time" style="color: red;display:none">提现时间为<span id="start_time"></span><span id="end_time"></span></div>
+        <div id="time" style="color: red;display:none">提现时间为<span id="start_time"></span>—<span id="end_time"></span></div>
     </div>
     <div class="weui-cells" id="list">
         <!--<div class="weui-cell weui-cell_access">-->
@@ -141,10 +141,10 @@
     {
         var data = {};
         data["code"] = "32";
-        //data["wechat_id"] = window.localStorage.getItem("openID");
-        data["wechat_id"] = "oWN6I06odGU-NfKEm97hQhuMjuNk";
-        data["seller_username"] = "test";
-        //data["seller_username"] = window.localStorage.getItem("seller_username");
+        data["wechat_id"] = window.localStorage.getItem("openID");
+//        data["wechat_id"] = "oWN6I06odGU-NfKEm97hQhuMjuNk";
+//        data["seller_username"] = "test";
+        data["seller_username"] = window.localStorage.getItem("seller_username");
         console.log(data);
         $.ajax({
             url: url,
@@ -152,7 +152,6 @@
             data: data,
             success: function(res){
                 res = JSON.parse(res);
-                alert(res.code);
                 console.log(res);
                 if(res.code == "0")
                 {
@@ -186,7 +185,7 @@
         })
     }
     getTime();
-//    getUserFund();
-//    getFundList();
+    getUserFund();
+    getFundList();
 </script>
 </html>

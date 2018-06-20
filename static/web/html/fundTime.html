@@ -23,11 +23,11 @@
 <div style="text-align: center; margin: 100px">
     <div style="margin: 20px">
         <span>提现开始时间：</span>
-        <input id="start_time" class="easyui-datetimebox" style="width:180px; display: inline-block;">
+        <input id="start_time" class="easyui-timespinner" style="width:200px;" required="required" data-options="min:'00:00',showSeconds:false">
     </div>
     <div style="margin: 20px">
         <span>提现结束时间：</span>
-        <input id="end_time" class="easyui-datetimebox" style="width:180px; display: inline-block">
+        <input id="end_time" class="easyui-timespinner" style="width:200px;" required="required" data-options="min:'00:00',showSeconds:false">
     </div>
     <div style="text-align: center;margin: 20px">
         <button class="myButton" onclick="confirmTime()">确定</button>
@@ -36,20 +36,21 @@
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <script>
     function confirmTime()
     {
         var start_time = $("#start_time").val();
         var end_time = $("#end_time").val();
-        start_time = start_time.split(" ")[1].split(":");
-        end_time = end_time.split(" ")[1].split(":");
-        var s_time = start_time[0]+":"+start_time[1];
-        var e_time = end_time[0]+":"+end_time[1];
+//        start_time = start_time.split(" ")[1].split(":");
+//        end_time = end_time.split(" ")[1].split(":");
+//        var s_time = start_time[0]+":"+start_time[1];
+//        var e_time = end_time[0]+":"+end_time[1];
         var data = {};
         data["code"] = "31";
-        data["begin_time"] = s_time;
-        data["end_time"] = e_time;
+        data["begin_time"] = start_time;
+        data["end_time"] = end_time;
         data["seller_username"] = window.localStorage.getItem("username");
         console.log(data);
         $.ajax({
@@ -63,11 +64,13 @@
                 if(res.code == "0")
                 {
                     alert("设置成功");
-                    $("#begin_time").val("");
-                    $("#end_time").val("");
+                    $("#start_time").timespinner("setValue","");
+                    $("#end_time").timespinner("setValue","");
                 }
                 else
+                {
                     alert("设置失败");
+                }
             }
         })
     }

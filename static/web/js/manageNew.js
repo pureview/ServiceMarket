@@ -52,16 +52,11 @@ $(function(){
                 align: 'center',
                 formatter: function(value,row,index){
                     if(row.role == "审核中" || row.role == "师傅审核完毕")
-                        return '<a onclick="agree(\''+row.wechat_id+'\')">通过</a> | <a onclick="disagree(\''+row.wechat_id+'\')">拒绝</a> | <a onclick="newToMaster(\''+row.wechat_id+'\')">升级为师傅</a>';
+                        return '<button onclick="agree(\''+row.wechat_id+'\')">通过</button> | <button onclick="disagree(\''+row.wechat_id+'\')">拒绝</button> | <button onclick="newToMaster(\''+row.wechat_id+'\')">升级为师傅</button>';
                     else if(row.role == "卖家审核完毕")
-                        return '<a onclick="newToMaster(\''+row.wechat_id+'\')">升级为师傅</a>';
+                        return '<button onclick="newToMaster(\''+row.wechat_id+'\')">升级为师傅</button>';
                 }
             }]
-        ],
-        toolbar: [
-            {
-
-            }
         ]
     });
     $('#manageNew_dg').datagrid('getPager').pagination({
@@ -71,38 +66,9 @@ $(function(){
         }
     });
 });
-$.extend($.fn.datagrid.methods, {
-    editCell: function(jq,param){
-        return jq.each(function(){
-            var opts = $(this).datagrid('options');
-            var fields = $(this).datagrid('getColumnFields',true).concat($(this).datagrid('getColumnFields'));
-            for(var i=0; i<fields.length; i++){
-                var col = $(this).datagrid('getColumnOption', fields[i]);
-                col.editor1 = col.editor;
-                if (fields[i] != param.field){
-                    col.editor = null;
-                }
-            }
-            $(this).datagrid('beginEdit', param.index);
-            for(var i=0; i<fields.length; i++){
-                var col = $(this).datagrid('getColumnOption', fields[i]);
-                col.editor = col.editor1;
-            }
-        });
-    }
-});
-var editIndex = undefined;
-function endEditing(){
-    if (editIndex == undefined){return true}
-    if ($('#setupShop_dg').datagrid('validateRow', editIndex)){
-        $('#setupShop_dg').datagrid('endEdit', editIndex);
-        editIndex = undefined;
-        return true;
-    } else {
-        return false;
-    }
-}
+
 function onClickCell(index, field){
+
     if (endEditing()){
         $('#manageNew_dg').datagrid('selectRow', index)
             .datagrid('editCell', {index:index,field:field});

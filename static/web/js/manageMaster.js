@@ -54,6 +54,24 @@ $(function(){
                 align: 'center'
             },
             {
+                field: 'mission_interval',
+                title: '任务时间间隔',
+                formatter: function(value,row,index){
+                    if(row.blacklist == "正常")
+                        return '<span style="color: red">'+row.mission_interval+'</span>';
+                    else
+                        return '<span>'+row.mission_interval+'</span>';
+                },
+                align: 'center',
+                editor: {
+                    type: 'validatebox',
+                    options:{
+                        required: true,
+                        missingMessage:'请填写任务间隔'
+                    }
+                }
+            },
+            {
                 field: 'extra',
                 title: '备注',
                 align: 'center'
@@ -64,10 +82,13 @@ $(function(){
                 align: 'center',
                 formatter: function(value,row,index){
                     if(row.blacklist == "正常")
-                        return '<a onclick="blackList(\''+row.wechat_id+'\')">拉黑</a>';
+                        return '<button onclick="blackList(\''+row.wechat_id+'\')">拉黑</button> | <button onclick="saveInfo(\''+row.wechat_id+'\',\''+row.mission_interval+'\')">保存</button>';
+                    //else if(row.blacklist == "被拉黑")
+                    //    return '<a onclick="cancelBlack(\''+row.id+'\')">取消拉黑</a>';
                 }
             }]
-        ]
+        ],
+        toolbar: "#tips"
     });
     $('#manageMaster_dg').datagrid('getPager').pagination({
         displayMsg:'当前显示第 {from}-{to} 条记录 ， 共 {total} 条记录',
@@ -76,12 +97,48 @@ $(function(){
         }
     });
 });
-
+//设置单元格可编辑
+$.extend($.fn.datagrid.methods, {
+    editCell: function(jq,param){
+        return jq.each(function(){
+            var opts = $(this).datagrid('options');
+            var fields = $(this).datagrid('getColumnFields',true).concat($(this).datagrid('getColumnFields'));
+            for(var i=0; i<fields.length; i++){
+                var col = $(this).datagrid('getColumnOption', fields[i]);
+                col.editor1 = col.editor;
+                if (fields[i] != param.field){
+                    col.editor = null;
+                }
+            }
+            $(this).datagrid('beginEdit', param.index);
+            for(var i=0; i<fields.length; i++){
+                var col = $(this).datagrid('getColumnOption', fields[i]);
+                col.editor = col.editor1;
+            }
+        });
+    }
+});
+var editIndex = undefined;
+function endEditing(){
+    if (editIndex == undefined){return true}
+    if ($('#manageMaster_dg').datagrid('validateRow', editIndex)){
+        $('#manageMaster_dg').datagrid('endEdit', editIndex);
+        editIndex = undefined;
+        return true;
+    } else {
+        return false;
+    }
+}
 function onClickCell(index, field){
-    if (endEditing()){
-        $('#manageMaster_dg').datagrid('selectRow', index)
-            .datagrid('editCell', {index:index,field:field});
-        editIndex = index;
+    var rows = $("#manageMaster_dg").datagrid('getRows');
+    var row = rows[index];
+    if(row.blacklist == "正常")
+    {
+        if (endEditing()){
+            $('#manageMaster_dg').datagrid('selectRow', index)
+                .datagrid('editCell', {index:index,field:field});
+            editIndex = index;
+        }
     }
 }
 
@@ -139,10 +196,73 @@ function blackList(username)
             else
             {
                 alert("请求失败，请重试");
+                var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getMasterList(page-1);
             }
         }
     })
 }
+
+//取消拉黑
+function cancelBlack(username)
+{
+    var data = {};
+    data["code"] = 5;
+    data["username"] = username;
+    console.log(data);
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: data,
+        success: function(res){
+            res = JSON.parse(res);
+            console.log(res);
+            if(res.code == "0")
+            {
+                alert("还原成功");
+                var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getMasterList(page-1);
+            }
+            else
+            {
+                alert("请求失败，请重试");
+                var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getMasterList(page-1);
+            }
+        }
+    })
+}
+
+//保存
+function saveInfo(username,day)
+{
+    var data = {};
+    data["code"] = 1;
+    data["wechat_id"] = username;
+    data["mission_interval"] = day;
+    console.log(data);
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: data,
+        success: function(res){
+            res = JSON.parse(res);
+            console.log(res);
+            if(res.code == "0")
+            {
+                alert("保存成功");
+                var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getMasterList(page-1);
+            }
+            else{
+                alert("保存失败");
+                var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
+                getMasterList(page-1);
+            }
+        }
+    });
+}
+
 //还原
 function beApprentice(username)
 {

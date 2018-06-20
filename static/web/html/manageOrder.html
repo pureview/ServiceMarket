@@ -10,12 +10,16 @@
 <body>
 <table id="manageOrder_dg"></table>
 <div id="searchtool" style="padding:5px">
-    <span>订单时间：</span>
-    <input id="begin_date" class="easyui-datebox" style="width: 150px;"/>
-    <input id="end_date" class="easyui-datebox" style="width: 150px;"/>
-    <button onclick="getOrderList()" >筛选</button>
-    <button onclick="dataExcel()" >导出</button>
-    <button onclick="passAllOrder()" >一键返现</button>
+    <div style="margin:10px">
+        <button onclick="dataExcel()" >导出</button>
+        <button onclick="passAllOrder()" >一键返现</button>
+    </div>
+    <div>
+        <span>订单时间：</span>
+        <input id="begin_date" class="easyui-datebox" style="width: 150px;"/>
+        <input id="end_date" class="easyui-datebox" style="width: 150px;"/>
+        <button onclick="getOrderList()" >筛选</button>
+    </div>
     <div style="margin-top: 10px">
         <span>订单状态：</span>
         <select id="status" onchange="getOrderList()">
@@ -24,20 +28,23 @@
             <option value="1">任务已提交</option>
             <option value="2">审核成功</option>
             <option value="3">审核失败</option>
-            <option value="4">任务失败</option>
+            <option value="4">任务超时</option>
         </select>
         <span>店铺名：</span>
         <select id="shop" onchange="getOrderList()">
             <option value="全部">全部</option>
         </select>
+        <span>商品名：</span>
+        <input id="good_name" type="text" onchange="getOrderList()">
     </div>
 </div>
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <script type="text/javascript" src="../js/datagrid-filter.js"></script>
-<script type="text/javascript" src="../js/manageOrder.js"></script>
+<script type="text/javascript" src="../js/manageOrder.js?version=1.0"></script>
 <script type="text/javascript" src="../js/tableExport.js"></script>
 <script type="text/javascript" src="../js/jquery.base64.js"></script>
 <script>

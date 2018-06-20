@@ -22,7 +22,7 @@
 <body>
         <div style="margin-bottom:20px">
             <div>
-                请选择店铺：<span style="color: red;">*仅平台可见，用户不可见</span>
+                <span style="color: red;">(必填)</span>请选择店铺：<span style="color: red;">*仅平台可见，用户不可见</span>
             </div>
             <input id="shopList" class="easyui-combobox"
                    name="language"
@@ -33,16 +33,16 @@
                 " style="width:50%;height:32px">
         </div>
         <div style="margin-bottom: 20px">
-            <div>商品首页：</div>
+            <div><span style="color: red;">(必填)</span>请上传商品首页：</div>
             <!--<input id="images" class="easyui-filebox" accept="image/*" name="file1" data-options="prompt:'请选择图片...'" style="width:50%;height:32px">-->
             <input id="images" type="file" accept="image/*">
         </div>
         <div style="margin-bottom: 20px">
-            <div>商品全名：<span style="color: red;">*仅平台可见，用户不可见</span></div>
+            <div><span style="color: red;">(必填)</span>商品全名：<span style="color: red;">*仅平台可见，用户不可见</span></div>
             <input id="good_name" class="easyui-textbox" style="width:50%;height:32px">
         </div>
         <div style="margin-bottom: 20px">
-            <div>排序方式：
+            <div><span style="color: red;">(必填)</span>排序方式：
                 <input type="radio" name="sort" value="综合" checked>综合
                 <input type="radio" name="sort" value="销量">销量
             </div>
@@ -53,32 +53,40 @@
             <input id="price2" class="easyui-textbox" style="width:24%;height:32px" >
         </div>
         <div style="margin-bottom: 20px">
-            <div>具体商品金额：<span style="color: red;">*仅平台可见，用户不可见</span></div>
+            <div><span style="color: red;">(必填)</span>具体商品金额：<span style="color: red;">*仅平台可见，用户不可见</span></div>
             <input id="good_price" class="easyui-numberbox" style="width:50%;height:32px">
         </div>
         <div style="margin-bottom: 20px">
-            <div>每单拍<input id="num" class="easyui-textbox" style="width:15%;height:32px" >件</div>
+            <div><span style="color: red;">(必填)</span>每单拍<input id="num" class="easyui-textbox" style="width:15%;height:32px" >件</div>
         </div>
         <div id="allKey" style="margin-bottom: 20px">
-            <div>
+            <div name="0">
+                <span style="color: red;">(必填)</span>
                 搜索关键词：
                 <input name="keyword" class="easyui-textbox" style="width:30%;height:32px">
                 添加<input name="count" class="easyui-numberbox" style="width:10%;height:32px">单
+                <a onclick="deleteKeyword('0')">删除</a>
             </div>
         </div>
         <div style="margin-bottom: 20px">
             <button onclick="addKeyword()">+增加搜索关键词</button>
         </div>
         <div style="margin-bottom: 20px">
-            <div style="margin-bottom: 20px">发布时间设置：</div>
+            <div style="margin-bottom: 20px"><span style="color: red;">(必填)</span>发布时间设置：</div>
             开始时间<input id="begin_time" class="easyui-datetimebox" style="width:24%;height:32px" >~
             结束时间<input id="end_time" class="easyui-datetimebox" style="width:24%;height:32px" >
-            总共<span></span>单
+            <!--总共<span id="counts"></span>单-->
         </div>
         <div style="margin-bottom: 20px">
-            <div>
-                师傅佣金：<input id="master_money" class="easyui-numberbox" style="width:10%;height:32px">
-                徒弟佣金：<input id="salve_money" class="easyui-numberbox" style="width:10%;height:32px">
+            <div><span style="color: red;">(必填)</span>选择做任务人：
+                <input type="radio" name="allow" value="1" checked onchange="chooseMoney()">师傅
+                <input type="radio" name="allow" value="0" onchange="chooseMoney()">全部
+            </div>
+        </div>
+        <div style="margin-bottom: 20px">
+            <div><span style="color: red;">(必填)</span>
+                <div id="master" style="display: inline-block;">师傅佣金：<input id="master_money" class="easyui-numberbox" style="width:50px;height:32px"></div>
+                <div id="salve" style="display: none;">徒弟佣金：<input id="salve_money" class="easyui-numberbox" style="width:50px;height:32px"></div>
             </div>
         </div>
         <div style="text-align: center;margin-bottom: 20px">
@@ -88,14 +96,81 @@
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
-<script type="text/javascript" src="../js/manageTask.js"></script>
+<script type="text/javascript" src="../js/setupTask.js"></script>
 <script>
     getShopList();
+    $("#shopList").combobox({
+        onSelect: function(e){
+            var target = e.text;
+            var sign = false;
+            var data = {};
+            data["code"] = 16;
+            data["op"] = 0;
+            data["seller_username"] = window.localStorage.getItem("username");
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: data,
+                success: function(res){
+                    res = JSON.parse(res);
+                    console.log(res);
+                    if(res.code == "0")
+                    {
+                        for(var i=0; i<res.data.length; i++)
+                        {
+                            if(target == res.data[i].shop)
+                                sign = true;
+                        }
+                        if(sign == false) {
+                            alert("您选择的店铺不存在");
+                            $("#shopList").combobox("setValue","");
+                        }
+                    }
+                }
+            });
+        }
+    });
+    var count = 1;
     function addKeyword()
     {
-        var html = $('<div>搜索关键词：<input name="keyword" class="easyui-textbox textbox" style="width:30%;height:32px;margin: 5px;">添加<input name="count" class="easyui-numberbox textbox" style="width:10%;height:32px">单 </div>');
+        var html = $('<div name="'+count+'">搜索关键词：<input name="keyword" class="easyui-textbox textbox" style="width:30%;height:32px;margin: 5px;">添加<input name="count" class="easyui-numberbox textbox" style="width:10%;height:32px">单 ' +
+                '<a onclick="deleteKeyword(\''+count+'\')">删除</a></div>');
         $("#allKey").append(html);
+        count++;
     }
+    function deleteKeyword(count)
+    {
+        $("div[name="+count+"]").remove();
+    }
+    function chooseMoney()
+    {
+        if($("input:radio[name=allow]:checked").val()=="0")
+            $("#salve").css("display","inline-block");
+        else
+            $("#salve").css("display","none");
+    }
+//    $("#allKey").numberbox({
+//        onChange: function(){
+//            var count = $("input[name=count]");
+//            var num = 0;
+//            for(var i=0;i<count.length;i++)
+//            {
+//                num += Number($(count[i]).val());
+//            }
+//            $("#counts").text(num);
+//        }
+//    });
+//    function getAllNums()
+//    {
+//        var count = $("input[name=count]");
+//        var num = 0;
+//        for(var i=0;i<count.length;i++)
+//        {
+//           num += Number($(count[i]).val());
+//        }
+//        $("#counts").text(num);
+//    }
 </script>
 </html>

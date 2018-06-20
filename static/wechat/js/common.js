@@ -59,6 +59,7 @@ function getTips()
 //刷新获取任务
 function refresh()
 {
+    $("#msg").html("");
     var data = {};
     data["code"] = 39;
     data["wechat_id"] = window.localStorage.getItem("openID");
@@ -71,12 +72,27 @@ function refresh()
         success: function(res){
             res = JSON.parse(res);
             console.log(res);
-            if(res.message == "申请任务")
-                $("#msg").text("您获取一个任务，请“点我”进行任务");
+            if(res.code == "0")
+            {
+                var missions = res.missions;
+                for(var i=0;i<missions.length;i++)
+                {
+                    var html = $('<div style="margin: 10px"><span id="msg" style="color:red" onclick="toTaskDetail(\''+missions[i].id+'\')">您获取一个任务，请“点我”进行任务</span></div>');
+                    $("#msg").append(html);
+                }
+                $("#refresh").attr("disabled","disabled");
+            }
             else
-                $("#msg").text(res.message);
+            {   var html = $('<div style="margin: 10px"<span id="msg" style="color:red">'+res.message+'</span></div>');
+                $("#msg").append(html);
+                $("#refresh").removeAttr("disabled");
+            }
         }
     });
+}
+function toTaskDetail(id)
+{
+    window.location.href="taskDetail.html?id="+id;
 }
 
 function changeTime(datetime)
