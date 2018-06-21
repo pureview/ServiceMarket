@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
-    <title>资金明细</title>
+    <title>徒弟贡献</title>
     <style>
     </style>
 </head>
@@ -52,6 +52,10 @@
                 if(res.code == 0)
                 {
                     var list = res.data;
+                    if (list==null){
+                        $('#list').append('徒弟暂时没有贡献佣金');
+                    }
+                    else{
                     for(var i=0;i<list.length;i++)
                     {
                         var li_list = list[i];
@@ -63,6 +67,10 @@
                                                     '</div>');
                         $("#list").append(html);
                     }
+                }
+                }
+                else{
+                        $('#list').append('徒弟暂时没有贡献佣金');
                 }
             }
         })

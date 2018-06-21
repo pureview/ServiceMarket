@@ -74,7 +74,16 @@ $(function(){
             {
                 field: 'extra',
                 title: '备注',
-                align: 'center'
+                align: 'center',
+                formatter: function(value,row,index){
+                    if(row.blacklist == "正常")
+                        return '<span style="color: red">'+row.extra+'</span>';
+                    else
+                        return '<span>'+row.extra+'</span>';
+                },
+                editor: {
+                    type: 'validatebox'
+                }
             },
             {
                 field: 'operate',
@@ -82,7 +91,7 @@ $(function(){
                 align: 'center',
                 formatter: function(value,row,index){
                     if(row.blacklist == "正常")
-                        return '<button onclick="blackList(\''+row.wechat_id+'\')">拉黑</button> | <button onclick="saveInfo(\''+row.wechat_id+'\',\''+row.mission_interval+'\')">保存</button>';
+                        return '<button onclick="blackList(\''+row.wechat_id+'\')">拉黑</button> | <button onclick="saveInfo(\''+row.wechat_id+'\',\''+row.mission_interval+'\',\''+row.extra+'\')">保存</button>';
                     //else if(row.blacklist == "被拉黑")
                     //    return '<a onclick="cancelBlack(\''+row.id+'\')">取消拉黑</a>';
                 }
@@ -234,12 +243,13 @@ function cancelBlack(username)
 }
 
 //保存
-function saveInfo(username,day)
+function saveInfo(username,day,extra)
 {
     var data = {};
     data["code"] = 1;
     data["wechat_id"] = username;
     data["mission_interval"] = day;
+    data["extra"] = extra;
     console.log(data);
     $.ajax({
         url: url,

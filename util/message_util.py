@@ -87,7 +87,7 @@ def push_take_order(openid,mission_id,mission_time,misson_url):  #参数分别�
                        "color":"#173177"
                    },
                    "remark": {
-                        "value":"点击此消息，进入做任务界面",
+                        "value":"",
                         "color":"#173177"
                    }
            }

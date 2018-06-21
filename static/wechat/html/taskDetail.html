@@ -85,12 +85,12 @@
     <div class="flex">
         <input type="text" id="order_id">
     </div>
-    <div class="flex" style="margin-top: 10px">
-        <span style="font-size: 1.2rem;color: #000;">请输入旺旺号</span>
-    </div>
-    <div class="flex">
-        <input type="text" id="wangwang">
-    </div>
+    <!--<div class="flex" style="margin-top: 10px">-->
+        <!--<span style="font-size: 1.2rem;color: #000;">请输入旺旺号</span>-->
+    <!--</div>-->
+    <!--<div class="flex">-->
+        <!--<input type="text" id="wangwang">-->
+    <!--</div>-->
     <div class="weui-btn-area" id="upload">
         <a class="weui-btn weui-btn_primary" style="width:15rem; margin-top: 100px; margin-bottom: 5rem" onclick="uploadTask()" id="showTooltips">提交</a>
     </div>
@@ -103,14 +103,18 @@
 <script>
     var img;
     var id = getQueryString("id");
+    var user_order_id = getQueryString("user_order_id");
+    getApprenticeTask();
     function getApprenticeTask()
     {
         var data = {};
         data["code"] = 8;
         data["wechat_id"] = window.localStorage.getItem("openID");
-        //data["wechat_id"] = "oWN6I06odGU-NfKEm97hQhuMjuNk";
         data["seller_username"] = window.localStorage.getItem("seller_username");
-        data["mission_id"] = id;
+        if(id != null)
+            data["mission_id"] = id;
+        if(user_order_id != null)
+            data["user_order_id"] = user_order_id;
         console.log(data);
         $.ajax({
             url: url,
@@ -133,8 +137,7 @@
                     $("#sort").text(taskData.sort);
                     $("#price").text(taskData.good_price);
                     $("#shop").text(taskData.shop);
-                    var id = getQueryString("id");
-                    $("#user_order_id").val(id);
+                    $("#user_order_id").val(taskData.user_order_id);
                     $("#left_time").text(time+"秒");
 
                 }
@@ -151,17 +154,17 @@
         if(confirm == true && confirmPrice == true && $("#order_id").val() !="")
         {
 
-            var wangwang = $("#wangwang").val();
+            //var wangwang = $("#wangwang").val();
+            //if(wangwang != "")
+            //{
+            //  data["wangwang"] = wangwang;
+            //}
             var data = {};
             data["code"] = "9";
             data["wechat_id"] = window.localStorage.getItem("openID");
             data["seller_username"] = window.localStorage.getItem("seller_username");
             data["user_order_id"] = $("#user_order_id").val();
             data["order_id"] = $("#order_id").val();
-            if(wangwang != "")
-            {
-                data["wangwang"] = wangwang;
-            }
             console.log(data);
             $.ajax({
                 url: url,
@@ -173,12 +176,16 @@
                     if(res.code == "0")
                     {
                         alert("提交成功");
-                        window.location.href = "apprentice.html";
+                        window.location.href = "taskList.html";
                     }
                     else
                     {
                         alert(res.message);
                     }
+                },
+                error: function(res)
+                {
+                    alert("提交失败");
                 }
             })
         }
@@ -248,6 +255,5 @@
 //        $('.weui-gallery__del').remove();
 //        $('.weui-gallery span').html('');
     }
-    getApprenticeTask();
 </script>
 </html>

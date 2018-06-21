@@ -65,7 +65,7 @@
                 搜索关键词：
                 <input name="keyword" class="easyui-textbox" style="width:30%;height:32px">
                 添加<input name="count" class="easyui-numberbox" style="width:10%;height:32px">单
-                <a onclick="deleteKeyword('0')">删除</a>
+                <button onclick="deleteKeyword('0')">删除</button>
             </div>
         </div>
         <div style="margin-bottom: 20px">
@@ -136,7 +136,7 @@
     function addKeyword()
     {
         var html = $('<div name="'+count+'">搜索关键词：<input name="keyword" class="easyui-textbox textbox" style="width:30%;height:32px;margin: 5px;">添加<input name="count" class="easyui-numberbox textbox" style="width:10%;height:32px">单 ' +
-                '<a onclick="deleteKeyword(\''+count+'\')">删除</a></div>');
+                '<button onclick="deleteKeyword(\''+count+'\')">删除</button></div>');
         $("#allKey").append(html);
         count++;
     }

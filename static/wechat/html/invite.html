@@ -6,11 +6,26 @@
     <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
     <title>邀请登录</title>
     <style>
+        #load{
+            position: fixed;
+            z-index: 999;
+            width: 100%;
+            height: 100%;
+            background: #999999a3;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
+<div id="load" style="display:none" class="weui-loadmore">
+    <i class="weui-loading" style="margin-top:50%"></i>
+    <span class="weui-loadmore__tips" style="margin-top:50%;font-size:1rem">正在注册</span>
+</div>
 <div class="container">
-        <div class="weui-cells weui-cells_form">
+        <div class="weui-cells weui-cells_form" style="margin-top:0">
+            <div class="weui-cell" >
+                注册上传图片将会消耗大量时间，请耐心等待几分钟
+            </div>
             <div class="weui-cell">
                 <div class="weui-cells_hd">
                     <label class="weui-label">邀请人ID</label>
@@ -99,6 +114,7 @@ function invite()
     if($("#inviter_id").val() == "" || $("#age").val() == "" || $("#wangwang").val() == "" || $("#wangwang").val()=="" || $("#images")[0].files[0]==undefined)
         alert("请填写完整信息");
     else{
+        $("#load").css("display","block");
         data.append("code","15");
         data.append("wechat_id",window.localStorage.getItem("openID"));
         data.append("inviter_id",$("#inviter_id").val());
@@ -119,10 +135,12 @@ function invite()
             success: function(res){
                 if(res.code == 0)
                 {
+                    $("#load").css("display","none");
                     alert("注册成功");
                     window.location.href = htmlPath+"/static/wechat/html/newStatus.html";
                 }
                 else{
+                    $("#load").css("display","none");
                     alert(res.message);
                 }
             }

@@ -152,7 +152,7 @@ function disagree(username)
             {
                 alert("拒绝申请");
                 var page = $("#manageNew_dg").datagrid('getPager').data("pagination").options.pageNumber;
-                getMasterList(page-1);
+                getNewList(page-1);
             }
             else
             {
@@ -185,7 +185,7 @@ function newToMaster(id)
             {
                 alert("升级成功");
                 var page = $("#manageNew_dg").datagrid('getPager').data("pagination").options.pageNumber;
-                getMasterList(page-1);
+                getNewList(page-1);
             }
             else
             {

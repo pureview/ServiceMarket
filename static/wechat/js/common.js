@@ -81,6 +81,7 @@ function refresh()
                     $("#msg").append(html);
                 }
                 $("#refresh").attr("disabled","disabled");
+                $("#refresh").attr("style","background-color:grey");
             }
             else
             {   var html = $('<div style="margin: 10px"<span id="msg" style="color:red">'+res.message+'</span></div>');

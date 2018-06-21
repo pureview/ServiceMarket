@@ -112,3 +112,72 @@ function getCookie(name)
     else
         return null;
 }
+function siftExtraMaster(){
+// 根据备注筛选
+var extra=$('#sift_extra').value;
+// 清空数据
+$("#manageMaster_dg").datagrid('loadData',{ total: 0, rows:[] });
+if(pageNum == null)
+    pageNum = 0;
+    var data = {};
+    data["code"] = 24;
+    data["page"] = pageNum;
+    data['extra']=extra;
+    data['master']=1;
+    data["seller_username"] = window.localStorage.getItem("username");
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: data,
+        success: function(res){
+            res = JSON.parse(res);
+            console.log(res);
+            if(res.code == "0")
+            {
+                var row = [];
+                var count = res.count[0];
+                for(var i=0;i<res.data.length;i++)
+                {
+                    row.push(res.data[i]);
+                    $("#manageMaster_dg").datagrid('loadData',{ total: count['0'], rows: row });
+                }
+            }
+        }
+    })
+
+}
+
+function siftExtraApprentice(){
+// 根据备注筛选
+var extra=$('#sift_extra').value;
+// 清空数据
+$("#manageApprentice_dg").datagrid('loadData',{ total: 0, rows:[] });
+if(pageNum == null)
+    pageNum = 0;
+    var data = {};
+    data["code"] = 24;
+    data["page"] = pageNum;
+    data['extra']=extra;
+    data['master']=0;
+    data["seller_username"] = window.localStorage.getItem("username");
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: data,
+        success: function(res){
+            res = JSON.parse(res);
+            console.log(res);
+            if(res.code == "0")
+            {
+                var row = [];
+                var count = res.count[0];
+                for(var i=0;i<res.data.length;i++)
+                {
+                    row.push(res.data[i]);
+                    $("#manageApprentice_dg").datagrid('loadData',{ total: count['0'], rows: row });
+                }
+            }
+        }
+    })
+
+}
