@@ -58,9 +58,7 @@ class MissionHandler(tornado.web.RequestHandler):
         helper=DBHelper()
         #print(self.request.body)
         if code=='0':
-            # 提交新的任务
-            if seller_username=='':
-                self.reply(ret);return
+            # 发布任务
             # 获取图片
             if 'images' in self.request.files:
                 file_metas=self.request.files['images']
@@ -177,6 +175,9 @@ class MissionHandler(tornado.web.RequestHandler):
                 else:
                     # Merge keyword and mission_num
                     keyword=row['keyword']
+                    if row['end_time']<now:
+                        statement='update mission set status=2 where id="%d"'%(row['id'])
+                        helper.commit(statement)
                     mission_num=str(row['mission_num'])
                     group_ids[group_id]['mission_num']+=','+mission_num
                     group_ids[group_id]['keyword']+=','+keyword
@@ -301,6 +302,7 @@ class MissionHandler(tornado.web.RequestHandler):
                 statement='select id,begin_time,end_time,master_money,slave_money,allow'+\
                         ',mission_num,good_num,shop,last_timestamp,keyword,good_name,good_price,sort,task_image,price_lower,price_higher from mission '+\
                         'where seller_username="%s" and status="0" and id="%s"'%(seller_username,mission_id)
+                # TODO:验证任务的有效性
                 res=helper.query(statement)
                 if len(res)==0:
                     print(statement)
@@ -309,6 +311,10 @@ class MissionHandler(tornado.web.RequestHandler):
                 mission_id,begin_time,end_time,master_money,slave_money,allow,mission_num,good_num,shop,mission_last_timestamp,\
                     keyword,good_name,good_price,sort,task_image,price_lower,price_higher=res[0]
                 # Calculate time interval
+                if time.time()>float(end_time):
+                    logger.error('申请任务的时候任务已过期:'+str(mission_id))
+                    ret['message']='任务已过期'
+                    self.reply(ret);return
                 if allow==1 and int(role)!=4:
                     print('username:',username,'mission_id:',mission_id)
                     ret['message']='您无法做任务'
@@ -330,6 +336,8 @@ class MissionHandler(tornado.web.RequestHandler):
                 # Write current timestamp 
                 statement='update mission set last_timestamp="%f" where id="%s"'%(cur_timestamp,mission_id)
                 res_=helper.commit(statement)
+                statement='update user set last_timestamp="%f" where id="%s"'%(time.time(),username)
+                helper.commit(statement)
                 # Successfully get mission
             else:
                 # First, query mission id
@@ -369,7 +377,6 @@ class MissionHandler(tornado.web.RequestHandler):
             ret['data']['price_higher']=price_higher
             ret['code']=0
             ret['data']['time_left']=time_left
-            print(ret)
             if user_order_id==None:
                 #TODO: Accept mission url
                 # Update user_order table
@@ -409,7 +416,8 @@ class MissionHandler(tornado.web.RequestHandler):
             if time.time()-accept_time<user_mission_interval:
                 ret['code']=255
                 ret['message']='请三分钟后前来提交任务'
-                self.write(json.dumps(ret,ensure_ascii=False));return;
+                print(json.dumps(ret,ensure_ascii=False))
+                self.reply(ret);return;
             if time.time()-accept_time>user_timeout:
                 ret['code']=255
                 statement='update user_order set status="4" where id="%s" and username="%s"'%(user_order_id,username)
@@ -419,7 +427,8 @@ class MissionHandler(tornado.web.RequestHandler):
                 #statement='update mission set last_timestamp="%s" where id="%s"'%(str(cur_timestamp),mission_id)
                 #res_=helper.commit(statement)
                 statement='update user set last_timestamp="%s" where id="%s"'%('0',username)
-                helper.commit(statement)
+                res_=helper.commit(statement)
+                logger.debug('[完成任务]重置用户时间戳为0,返回值为'+str(res_))
                 ret['message']='任务超时，不予处理'
                 self.reply(ret);return
             if wangwang==None:
@@ -430,7 +439,6 @@ class MissionHandler(tornado.web.RequestHandler):
             statement='update user_order set status="1",order_id="%s",wangwang="%s" where id="%s" and username="%s"'%(order_id,wangwang,user_order_id,username)
             res=helper.commit(statement)
             ret['code']=res
-            print(ret)
         elif code=='10':
             '''
             卖家查询订单
@@ -554,7 +562,6 @@ class MissionHandler(tornado.web.RequestHandler):
             ret['order_num']=order_num 
             ret['master_money']=master_money
             ret['slave_money']=slave_money
-            print(ret)
         elif code=='12':
             '''
             用户查询订单
@@ -624,14 +631,10 @@ class MissionHandler(tornado.web.RequestHandler):
                     row.pop('create_date')
             else:
                 ret['message']='没有明细'
-            print(ret)
         elif code=='14':
             '''
-            查询用户信息
-            @Deprecated
-            @NotImplemented
+            Not Implemented
             '''
-            wechat_id=self.get_argument('wechat_id')
         elif code=='15':
             '''
             用户注册
@@ -642,7 +645,7 @@ class MissionHandler(tornado.web.RequestHandler):
             res=helper.query(statement)
             if res!=None and len(res)>0:
                 ret['message']='用户已存在'
-                self.write(json.dumps(ret,ensure_ascii=False));return
+                self.reply(ret);return
             master_id=self.get_argument('inviter_id','')
             # Query master wechat_id
             statement='select wechat_id from user where id="%s" and role=4'%(master_id)
@@ -656,9 +659,11 @@ class MissionHandler(tornado.web.RequestHandler):
             wangwang=self.get_argument('wangwang')
             extra=self.get_argument('extra','')
             phone=self.get_argument('phone')
-            trading_image=''
-            if 'images' in self.request.files:
-                file_metas=self.request.files['images']
+            role=self.get_argument('role',0)
+            if 'comment_image' in self.request.files and 'my_taobao_image' in self.request.files:
+                comment_image=''
+                my_taobao_image=''
+                file_metas=self.request.files['comment_image']
                 for meta in file_metas:
                     filename=meta['filename'].replace(' ','')
                     # Build file path
@@ -671,12 +676,28 @@ class MissionHandler(tornado.web.RequestHandler):
                         new_file_name=prefix+filename
                     with open(new_file_name,'wb') as up:
                         up.write(meta['body'])
-                    trading_image=new_file_name
-            statement='insert into user (wechat_id,inviter_id,age,gender,wangwang,'+\
-                    'trading_image,role,seller_username,create_date,master_id,master_wechat_id,extra,phone,last_timestamp) values '+\
-                    '("%s","%s","%s","%s","%s","%s","0","%s",now(),"%s","%s","%s","%s",%f)'\
-                    %(wechat_id,master_id,age,gender,wangwang,trading_image,seller_username,
+                    comment_image=new_file_name
+                file_metas=self.request.files['my_taobao_image']
+                for meta in file_metas:
+                    filename=meta['filename'].replace(' ','')
+                    # Build file path
+                    prefix='image/'+seller_username+'/'
+                    if not os.path.exists(prefix):
+                        os.mkdir(prefix)
+                    new_file_name=prefix+filename
+                    if os.path.exists(new_file_name):
+                        filename=str(random.randint(0,10000))+filename
+                        new_file_name=prefix+filename
+                    with open(new_file_name,'wb') as up:
+                        up.write(meta['body'])
+                    my_taobao_image=new_file_name
+                statement='insert into user (wechat_id,inviter_id,age,gender,wangwang,'+\
+                    'my_taobao_image,comment_image,role,seller_username,create_date,master_id,master_wechat_id,extra,phone,last_timestamp) values '+\
+                    '("%s","%s","%s","%s","%s","%s","%s","s","%s",now(),"%s","%s","%s","%s",%f)'\
+                    %(wechat_id,master_id,age,gender,wangwang,my_taobao_image,comment_image,role,seller_username,
                             master_id,master_wechat_id,extra,phone,0)
+            else:
+                ret['message']='图片上传失败：'+str(self.request.files.keys())
             res=helper.commit(statement)
             ret['code']=res
         elif code=='16':
@@ -824,7 +845,7 @@ class MissionHandler(tornado.web.RequestHandler):
                         ret['code']=res
                         ret['data']=cash_callback['redpack_url']
                 else:
-                    pass
+                    ret['message']='余额不足'
         elif code=='18':
             '''
             查询用户状态
@@ -872,7 +893,7 @@ class MissionHandler(tornado.web.RequestHandler):
                 statement='select good_price,master_money,slave_money from user_order where id="%s"'%(order_id)
                 good_price,master_money,slave_money=helper.query(statement)[0]
                 if role<3:
-                    self.write(json.dumps(ret,ensure_ascii=False));return;
+                    self.reply(ret);return;
                 # Step 3. 查询用户现金账户并生成现金交易订单
                 if role==3:
                     # 徒弟账户
@@ -932,10 +953,10 @@ class MissionHandler(tornado.web.RequestHandler):
                         master_cash_left=float(res[0][2])
                         master_good_money=float(res[0][5])
                         master_mission_money=float(res[0][6])
-                    master_cash_op=good_price+slave_money+master_money
+                    master_cash_op=good_price+slave_money
                     master_cash_left+=master_cash_op
                     master_good_money+=good_price
-                    master_mission_money+=slave_money+master_money
+                    master_mission_money+=slave_money
                     statement='insert into cash_order (username,cash_op,cash_left,detail,create_date,complete_user,good_money,mission_money)'+\
                         'values("%s","%f","%f","自己（师傅）完成任务",now(),"%s","%f","%f")'\
                         %(username,master_cash_op,master_cash_left,username,master_good_money,master_mission_money)
@@ -1012,6 +1033,7 @@ class MissionHandler(tornado.web.RequestHandler):
             '''
             卖家用户管理，查询用户
             '''
+            print('卖家用户管理',self.request.body)
             statement='select count(*) from user where seller_username="%s" and role>=0'%(seller_username)
             ret['count']=helper.query(statement)
             ret['page_num']=num_per_page
@@ -1056,7 +1078,7 @@ class MissionHandler(tornado.web.RequestHandler):
                 if row[13]==None:
                     row_dict['mission_interval']=7
                 ret['data'].append(row_dict)
-            #print(ret)
+            print('卖家用户管理',ret)
         elif code=='25':
             '''
             师傅用户管理，查询用户
@@ -1243,6 +1265,7 @@ class MissionHandler(tornado.web.RequestHandler):
                     #res_=helper.commit(statement)
                     statement='update user set last_timestamp="%s" where id="%s"'%('0',username)
                     res_=helper.commit(statement)
+                    logger.debug('[获取用户列表]重置用户时间戳为0,返回值为'+str(res_))
                 ret['data'].append(row_dict)
             ret['code']=0
         elif code=='36':
@@ -1257,7 +1280,6 @@ class MissionHandler(tornado.web.RequestHandler):
             res=helper.query(statement)
             if len(res)>0:
                 ret['data']=res
-            print(ret)
         elif code=='37':
             '''
             一键升级为师傅
@@ -1330,6 +1352,12 @@ class MissionHandler(tornado.web.RequestHandler):
             username=self.get_username()
             wechat_id=self.get_argument('wechat_id')
             ret['data']=dict()
+            # Query active mission
+            statement='select id from user_order where username="%s" and status=0'%(username)
+            res=helper.query(statement)
+            if len(res)>0:
+                ret['message']='请在任务管理中完成已有的任务'
+                self.reply(ret);return
             # Query user's identity
             statement='select role,blacklist,mission_interval,last_timestamp from user where wechat_id="%s"'%(wechat_id)
             res=helper.query(statement)
@@ -1370,6 +1398,8 @@ class MissionHandler(tornado.web.RequestHandler):
                 mission_num=row['mission_num']
                 if row['mission_num']==0 or row['good_num']==0:
                     continue
+                if time.time()>float(end_time):
+                    continue
                 if last_timestamp!=None:
                     interval=(float(end_time)-float(begin_time))/mission_num
                     c_waiting_time=interval-(cur_timestamp-float(last_timestamp))
@@ -1386,6 +1416,40 @@ class MissionHandler(tornado.web.RequestHandler):
             if len(missions)==0:
                 ret['code']=1
                 ret['message']='暂无任务，预计等待时间'+str(int(waiting_time))+'秒'
+        elif code=='40':
+            '''
+            发送验证码
+            '''
+            phone=self.get_argument('phone')
+            if phone.isdigit():
+                ret['message']='手机号必须为数字'
+                self.reply(ret);return
+            verify_code=random.randint(100000,999999)
+            statement='delete from phone_code where phone='+phone
+            helper.commit(statement)
+            statement='insert into phone_code (phone,verify_code) values("%s","d")'%(phone,code)
+            res=helper.commit(statement)
+            res=send_sms_code(phone,verify_code)
+            ret['code']=res
+            if res!=0:
+                ret['message']='发送验证码失败'
+            ret['verify_code']=verify_code
+        elif code=='41':
+            '''
+            匹配验证码
+            '''
+            phone=self.get_argument('phone')
+            verify_code=self.get_argument('verify_code')
+            statement='select verify_code from phone_code where phone='+phone
+            res=helper.query(statement)
+            if len(res)>0:
+                if res[0][0]==verify_code:
+                    ret['code']=0
+                    ret['message']='匹配成功'
+                else:
+                    ret['message']='验证码输入错误'
+            else:
+                ret['message']='验证码还未发送'
         else:
             pass
         self.set_header("Access-Control-Allow-Origin", "*") # 这个地方可以写域名
@@ -1498,6 +1562,7 @@ class MissionHandler(tornado.web.RequestHandler):
         '''
         if open_id==None:
             open_id=self.get_argument('wechat_id')
+        money=int(money*100)
         method="jfy.redpacks.send"
         jsdict_1=OrderedDict();
         jsdict_1['appkey']=myappkey
@@ -1507,8 +1572,10 @@ class MissionHandler(tornado.web.RequestHandler):
         jsonsend_bytes=urllib.parse.urlencode(jsdict_1).encode('utf-8')
         response= urllib.request.urlopen(apiurl,jsonsend_bytes).read().decode('utf-8')
         now=datetime.datetime.now().strftime("%Y%m%d-%H%M")
-        push_cash_success(open_id,money,now)
+        push_cash_success(open_id,money/100,now)
         temp=json.loads(response)
+        logger.debug('用户提现,openId'+open_id+', 返回值:',temp)
+        print('提现返回：',temp)
         return temp;
 
     def get_open_id(self,code,appid='wx1c61776edae08975',secret='15625151323fe35cccd702c5cf987e83'):

@@ -34,8 +34,8 @@
         </div>
         <div style="margin-bottom: 20px">
             <div><span style="color: red;">(必填)</span>请上传商品首页：</div>
-            <!--<input id="images" class="easyui-filebox" accept="image/*" name="file1" data-options="prompt:'请选择图片...'" style="width:50%;height:32px">-->
-            <input id="images" type="file" accept="image/*">
+            <input id="images" type="file" accept="image/*" onchange="showImg()">
+            <img id="img" style="width:30rem;display:block">
         </div>
         <div style="margin-bottom: 20px">
             <div><span style="color: red;">(必填)</span>商品全名：<span style="color: red;">*仅平台可见，用户不可见</span></div>
@@ -85,8 +85,8 @@
         </div>
         <div style="margin-bottom: 20px">
             <div><span style="color: red;">(必填)</span>
-                <div id="master" style="display: inline-block;">师傅佣金：<input id="master_money" class="easyui-numberbox" style="width:50px;height:32px"></div>
-                <div id="salve" style="display: none;">徒弟佣金：<input id="salve_money" class="easyui-numberbox" style="width:50px;height:32px"></div>
+                <div id="master" style="display: inline-block;">基本佣金：<input id="master_money" class="easyui-numberbox" style="width:50px;height:32px"></div>
+                <div id="salve" style="display: none;">提成佣金：<input id="salve_money" class="easyui-numberbox" style="width:50px;height:32px"></div>
             </div>
         </div>
         <div style="text-align: center;margin-bottom: 20px">
@@ -101,6 +101,8 @@
 <script type="text/javascript" src="../js/setupTask.js"></script>
 <script>
     getShopList();
+
+    //获取店铺列表
     $("#shopList").combobox({
         onSelect: function(e){
             var target = e.text;
@@ -132,6 +134,8 @@
             });
         }
     });
+
+    //对关键词的处理
     var count = 1;
     function addKeyword()
     {
@@ -151,26 +155,22 @@
         else
             $("#salve").css("display","none");
     }
-//    $("#allKey").numberbox({
-//        onChange: function(){
-//            var count = $("input[name=count]");
-//            var num = 0;
-//            for(var i=0;i<count.length;i++)
-//            {
-//                num += Number($(count[i]).val());
-//            }
-//            $("#counts").text(num);
-//        }
-//    });
-//    function getAllNums()
-//    {
-//        var count = $("input[name=count]");
-//        var num = 0;
-//        for(var i=0;i<count.length;i++)
-//        {
-//           num += Number($(count[i]).val());
-//        }
-//        $("#counts").text(num);
-//    }
+
+    function getObjectURL(file) {
+        var url = null;
+        if (window.createObjectURL != undefined) { // basic
+            url = window.createObjectURL(file);
+        } else if (window.URL != undefined) { // mozilla(firefox)
+            url = window.URL.createObjectURL(file);
+        } else if (window.webkitURL != undefined) { // webkit or chrome
+            url = window.webkitURL.createObjectURL(file);
+        }
+        return url;
+    }
+    //显示上传图片
+    function showImg() {
+        var f = document.getElementById("images").files[0];
+        $("#img").attr("src", getObjectURL(f));
+    }
 </script>
 </html>

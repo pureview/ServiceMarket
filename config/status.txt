@@ -1,0 +1,2 @@
+alter table user_order modify `status` int(11) DEFAULT '0' COMMENT '-2 未发布 -1未接收 0任务中，1待审核，2已返现，3审核失败，4超时，5已取消
+

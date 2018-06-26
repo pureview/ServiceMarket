@@ -92,8 +92,8 @@ $(function(){
                 formatter: function(value,row,index){
                     if(row.blacklist == "正常")
                         return '<button onclick="blackList(\''+row.wechat_id+'\')">拉黑</button> | <button onclick="saveInfo(\''+row.wechat_id+'\',\''+row.mission_interval+'\',\''+row.extra+'\')">保存</button>';
-                    //else if(row.blacklist == "被拉黑")
-                    //    return '<a onclick="cancelBlack(\''+row.id+'\')">取消拉黑</a>';
+                    else if(row.blacklist == "被拉黑")
+                        return '<button onclick="cancelBlack(\''+row.id+'\')">取消拉黑</button>';
                 }
             }]
         ],
@@ -153,12 +153,19 @@ function onClickCell(index, field){
 
 function getMasterList(pageNum)
 {
+    var extra = $('#sift_extra').val();
     if(pageNum == null)
         pageNum = 0;
     var data = {};
     data["code"] = 24;
     data["page"] = pageNum;
     data["seller_username"] = window.localStorage.getItem("username");
+    data['master']=1;
+    if(extra != "")
+    {
+        data["extra"] = extra;
+    }
+    console.log(data);
     $.ajax({
         url: url,
         type: 'post',

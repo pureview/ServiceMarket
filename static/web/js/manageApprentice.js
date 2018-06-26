@@ -97,8 +97,8 @@ $(function(){
                 formatter: function(value,row,index){
                     if(row.blacklist == "正常")
                         return '<button onclick="blackList(\''+row.wechat_id+'\')">拉黑</button> | <button onclick="beMaster(\''+row.wechat_id+'\')">升级</button> | <button onclick="saveInfo(\''+row.wechat_id+'\',\''+row.mission_interval+'\',\''+row.extra+'\')">保存</button>';
-                    //else if(row.blacklist == "被拉黑")
-                    //    return '<a onclick="cancelBlack(\''+row.id+'\')">取消拉黑</a>';
+                    else if(row.blacklist == "被拉黑")
+                        return '<button onclick="cancelBlack(\''+row.id+'\')">取消拉黑</button>';
                 }
             }]
         ],
@@ -157,12 +157,18 @@ function onClickCell(index, field){
 //获取徒弟列表
 function getApprenticeList(pageNum)
 {
+    var extra = $('#sift_extra').val();
     if(pageNum == null)
         pageNum = 0;
     var data = {};
     data["code"] = 24;
     data["page"] = pageNum;
     data["seller_username"] = window.localStorage.getItem("username");
+    data['master']=0;
+    if(extra != "")
+    {
+        data["extra"] = extra;
+    }
     $.ajax({
         url: url,
         type: 'post',
