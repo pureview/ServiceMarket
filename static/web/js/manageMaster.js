@@ -14,6 +14,10 @@ $(function(){
         idField : 'id',
         columns:[
             [{
+                field: 'choose',
+                align: 'center',
+                checkbox: true
+            },{
                 field: 'id',
                 title: '用户ID',
                 align: 'center'
@@ -249,8 +253,27 @@ function cancelBlack(username)
     })
 }
 
+var signal = false;
+function saveDay()
+{
+    var rowData = $("#manageMaster_dg").datagrid('getSelections');
+    var day = $("#day").val();
+    for(var i=0;i<rowData.length;i++)
+    {
+        var username = rowData[i].wechat_id;
+        var extra = rowData[i].mission_interval;
+        saveInfo(username,day,extra,"1");
+    }
+    if(signal == true){
+        alert("保存成功");
+        var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
+        getMasterList(page-1);
+        $("#day").val("");
+    }
+
+}
 //保存
-function saveInfo(username,day,extra)
+function saveInfo(username,day,extra,sig)
 {
     var data = {};
     data["code"] = 1;
@@ -262,17 +285,19 @@ function saveInfo(username,day,extra)
         url: url,
         type: 'post',
         data: data,
+        async: false,
         success: function(res){
             res = JSON.parse(res);
             console.log(res);
             if(res.code == "0")
             {
-                alert("保存成功");
+                if(sig == null) alert("保存成功");
+                else signal = true;
                 var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
                 getMasterList(page-1);
             }
             else{
-                alert("保存失败");
+                if(sig == null) alert("保存失败");
                 var page = $("#manageMaster_dg").datagrid('getPager').data("pagination").options.pageNumber;
                 getMasterList(page-1);
             }

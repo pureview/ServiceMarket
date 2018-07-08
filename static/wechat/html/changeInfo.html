@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <link rel="stylesheet" type="text/css" href="../style/base.css">
+    <title>修改信息</title>
+    <style>
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="weui-cells" style="margin-top:10px;position:sticky; position:-webkit-sticky;bottom:0;">
+        <div class="weui-cell weui-cell_access">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">用户名</span>
+            </div>
+            <div class="weui-cell__hd">
+                <span id="id" style="vertical-align: middle">10012</span>
+            </div>
+        </div>
+        <div class="weui-cell weui-cell_access">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">身份</span>
+            </div>
+            <div class="weui-cell__hd">
+                <span id="intent_role" style="vertical-align: middle">10012</span>
+            </div>
+        </div>
+        <div class="weui-cell weui-cell_access">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">师傅代号</span>
+            </div>
+            <div class="weui-cell__hd">
+                <span id="master_id" style="vertical-align: middle">10012</span>
+            </div>
+        </div>
+        <div class="weui-cell weui-cell_access">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">性别</span>
+            </div>
+            <div class="weui-cell__hd">
+                <span id="sex" style="vertical-align: middle">女</span>
+            </div>
+        </div>
+        <div class="weui-cell weui-cell_access">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">手机号</span>
+            </div>
+            <div class="weui-cell__hd">
+                <span id="phone" style="vertical-align: middle">10012</span>
+            </div>
+        </div>
+        <div class="weui-cell weui-cell_access">
+            <div class="weui-cell__bd">
+                <span style="vertical-align: middle">旺旺号</span>
+            </div>
+            <div class="weui-cell__hd">
+                <span id="wangwang" style="vertical-align: middle">10012</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    getUserInfo();
+    function getUserInfo()
+    {
+        var data = {};
+        data["code"] = 43;
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        $.ajax({
+            url: url,
+            type: "post",
+            data: data,
+            dataType: "json",
+            success: function(res){
+                console.log(res);
+                if(res.code == "0")
+                {
+                    var info = res.data;
+                    $("#id").text(info.id);
+                    $("#master_id").text(info.master_id);
+                    $("#sex").text(info.gender);
+                    $("#phone").text(info.phone);
+                    $("#wangwang").text(info.wangwang);
+                    $("#intent_role").text(info.intent_role);
+                }
+
+            }
+        })
+    }
+</script>
+</html>

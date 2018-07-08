@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <link rel="stylesheet" type="text/css" href="../style/base.css">
     <title>任务列表</title>
     <style>
         select{
@@ -15,14 +16,14 @@
 </head>
 <body>
 <div class="container">
-    <select id="select" onchange="getFinishedTask()">
-        <option value="-1" selected>全部</option>
-        <option value="0">任务中</option>
-        <option value="1">任务提交</option>
-        <option value="2">审核成功</option>
-        <option value="3">审核失败</option>
-        <option value="4">超时</option>
-    </select>
+    <!--<select id="select" onchange="">-->
+        <!--<option value="-1" selected>全部</option>-->
+        <!--<option value="0">任务中</option>-->
+        <!--<option value="1">任务提交</option>-->
+        <!--<option value="2">审核成功</option>-->
+        <!--<option value="3">审核失败</option>-->
+        <!--<option value="4">超时</option>-->
+    <!--</select>-->
     <div class="weui-cells" id="list">
         <!--<div class="weui-cell weui-cell_access">-->
             <!--<div class="weui-cell__bd">-->
@@ -34,21 +35,37 @@
             <!--</div>-->
         <!--</div>-->
     </div>
+    <div id="footer">
+        <div onclick="window.location.href='getTask.html'">
+            <img src="../image/home.png">
+            <p>首页</p>
+        </div>
+        <div onclick="window.location.href='taskList.html'">
+            <img src="../image/mine_click.png">
+            <p style="color: #ec8764;">任务进度</p>
+        </div>
+        <div id="manage" onclick="window.location.href='manage.html'">
+            <img src="../image/mine.png">
+            <p>徒弟管理</p>
+        </div>
+        <div onclick="window.location.href='mine.html'">
+            <img src="../image/task.png">
+            <p>我的</p>
+        </div>
+    </div>
 </div>
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <script>
-    function getFinishedTask()
+    var role = window.localStorage.getItem("role");
+    if(role == "slave") $("#manage").css("display","none");
+    getTaskList();
+    function getTaskList()
     {
-        var sift = $("#select").val();
-        $("#list").html("");
         var data = {};
-        data["code"] = 35;
-        data["sift"] = sift;
+        data["code"] = "42";
         data["wechat_id"] = window.localStorage.getItem("openID");
-        data["seller_username"] = window.localStorage.getItem("seller_username");
-        console.log(data);
         $.ajax({
             url: url,
             type: 'post',
@@ -59,58 +76,54 @@
                 if(res.code == "0")
                 {
                     var list = res.data;
-                    for(var i = 0;i<list.length; i++)
+                    var taskStatus;
+                    switch (list.status)
                     {
-                        var taskStatus;
-                        switch (list[i].status)
-                        {
-                            case 0:
-                                taskStatus = "任务中";
-                                break;
-                            case 1:
-                                taskStatus = "任务提交";
-                                break;
-                            case 2:
-                                taskStatus = "审核成功";
-                                break;
-                            case 3:
-                                taskStatus = "审核失败";
-                                break;
-                            case 4:
-                                taskStatus = "超时";
-                                break;
+                        case 0:
+                            taskStatus = "已接单";
+                            break;
+                        case 1:
+                            taskStatus = "任务提交待审核";
+                            break;
+                        case 2:
+                            taskStatus = "已返现";
+                            break;
+                        case 3:
+                            taskStatus = "审核失败";
+                            break;
+                        case 4:
+                            taskStatus = "超时";
+                            break;
 
-                        }
-                        if(taskStatus == "任务中")
-                        {
-                            var begin_time = changeTime(list[i].begin_time);
-                            var left_time = (list[i].time_left).toFixed(2);
-                            var html = $('<div class="weui-cell weui-cell_access" onclick="window.location.href=\'taskDetail.html?user_order_id='+list[i].id+'\'">'+
-                                    '<div class="weui-cell__bd">'+
-                                    '<div><span style="vertical-align: middle">任务开始时间：</span><span>'+begin_time+'</span></div>'+
-                                    '<div><span style="vertical-align: middle">任务剩余时间：</span><span>'+left_time+'秒</span></div>'+
-                                    '<div><span style="vertical-align: middle">关键字：</span><span>'+list[i].keyword+'</span></div>'+
-                                    '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+taskStatus+'</span></div>'+
-                                    '</div>'+
-                                    '</div>');
-                        }
-                        else
-                        {
-                            var begin_time = changeTime(list[i].begin_time);
-                            var html = $('<div class="weui-cell weui-cell_access">'+
-                                    '<div class="weui-cell__bd">'+
-                                    '<div><span style="vertical-align: middle">任务开始时间：</span><span>'+begin_time+'</span></div>'+
-                                    '<div><span style="vertical-align: middle">关键字：</span><span>'+list[i].keyword+'</span></div>'+
-                                    '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+taskStatus+'</span></div>'+
-                                    '</div>'+
-                                    '</div>');
-                        }
+                    }
+                    if(list.status == 0)
+                    {
+                        var html = $('<div class="weui-cell weui-cell_access" onclick="window.location.href=\'taskDetail.html?id='+list.id+'\'">'+
+                                '<div class="weui-cell__bd">'+
+                                '<div><span style="vertical-align: middle">商品名称：</span><span>'+list.good_name+'</span></div>'+
+                                '<div><span style="vertical-align: middle">关键字：</span><span>'+list.keyword+'</span></div>'+
+                                '<div><span style="vertical-align: middle">旺旺号：</span><span>'+list.wangwang+'</span></div>'+
+                                '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+taskStatus+'</span></div>'+
+                                '</div>'+
+                                '</div>');
                         $("#list").append(html);
                     }
+                }
+                else if(res.message != "有超时的任务" && res.message != "任务已超时")
+                {
+                    var list = res.data;
+                    var html = $('<div class="weui-cell weui-cell_access">'+
+                            '<div class="weui-cell__bd">'+
+                            '<div><span style="vertical-align: middle">商品名称：</span><span>'+list.good_name+'</span></div>'+
+                            '<div><span style="vertical-align: middle">关键字：</span><span>'+list.keyword+'</span></div>'+
+                            '<div><span style="vertical-align: middle">旺旺号：</span><span>'+list.wangwang+'</span></div>'+
+                            '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+res.message+'</span></div>'+
+                            '</div>'+
+                            '</div>');
+                    $("#list").append(html);
                 }
             }
         });
     }
-    getFinishedTask();
 </script>
 </html>

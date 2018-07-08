@@ -32,9 +32,9 @@
         </div>
 
     </div>
-    <div class="weui-btn-area" style="text-align: center">
+    <div class="weui-btn-area">
         <!--button id="nextPage" onclick="nextPage()">下一步</button-->
-        <button id="nextPage" onclick="nextStep()" style="border:1px solid #ccc;border-radius:5px;padding:5px;background: #3cc51f;color: #fff;width: 10rem;">下一步</button>
+        <button id="nextPage" onclick="nextStep()" style="border:1px solid #ccc;border-radius:5px;padding:5px;background: #3cc51f;color: #fff;">下一步</button>
     </div>
 </div>
 </body>
@@ -59,7 +59,6 @@
                 res = JSON.parse(res);
                 if(res.code == 0)
                 {
-                    window.localStorage.setItem("phone", $("#phone").val());
                     window.location.href = htmlPath + "/static/wechat/html/invite.html";
                 }
                 else
@@ -89,7 +88,6 @@
                 type: 'post',
                 data: data,
                 success: function(res){
-                    alert("验证码已发送，请耐心等待");
                 }
             })
         }

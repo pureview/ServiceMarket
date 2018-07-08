@@ -19,15 +19,23 @@ $(function(){
                 align: 'center',
                 checkbox: true
             },{
+                field: 'id',
+                title: '任务ID',
+                align: 'center',
+                formatter: function(value){
+                    //toOrder(value);
+                    return '<a onclick="toOrder(\''+value+'\')">'+value+'</a>';
+                }
+            },{
                 field: 'good_name',
                 title: '商品名称',
                 align: 'center'
             },{
-                field: 'mission_num',
+                field: 'mission_nums',
                 title: '总单数',
                 align: 'center'
             },{
-                field: 'keyword',
+                field: 'keywords',
                 title: '关键字',
                 align: 'center'
             }, {
@@ -62,7 +70,7 @@ $(function(){
                 align: 'center',
                 formatter: function(value,row,index){
                     if(row.status == 0)
-                        return '<button onclick="cancelTask(\''+row.id+'\')">取消任务</button> | <button onclick="reSetupTask(\''+row.id+'\')">重新发布</button> | <button onclick="deleteTask(\''+row.id+'\')">删除</button>';
+                        return '<button onclick="cancelTask(\''+row.id+'\')">取消任务</button> | <button onclick="deleteTask(\''+row.id+'\')">删除</button>';
                     else if(row.status == 1)
                         return '<button onclick="reSetupTask(\''+row.id+'\')">重新发布</button> | <button onclick="deleteTask(\''+row.id+'\')">删除</button>';
                 }
@@ -180,4 +188,10 @@ function reSetupTask(id)
     window.localStorage.setItem("mission_id",id);
     $('.tabs-first', parent.document).click();
     parent.window.callReset(id);
+}
+
+function toOrder(id)
+{
+    window.localStorage.setItem("task_id",id);
+    parent.window.callOrder(id);
 }

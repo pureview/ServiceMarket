@@ -18,7 +18,8 @@ seller_username = getQueryString("state");
 seller_id = getQueryString("seller_id");
 window.localStorage.setItem("seller_username",seller_username);
 window.localStorage.setItem("seller_id",seller_id);
-$(function(){
+window.onload = function(){
+    //alert(code);
     var user_data = {};
     user_data["code"] = 27;
     user_data["wechat_code"] = code;
@@ -32,12 +33,13 @@ $(function(){
             if(res.code == "0")
             {
                 openID = res.data;
+                //alert(openID);
                 window.localStorage.setItem("openID",openID);
                 getUserRole();
             }
         }
     })
-});
+};
 
 //判断该用户是否注册
 
@@ -63,11 +65,13 @@ function getUserRole()
             {
                 if(res.master == false)
                 {
-                    window.location.href = htmlPath+"/static/wechat/html/apprentice.html?id="+id;
+                    window.localStorage.setItem("role","slave");
+                    window.location.href = htmlPath+"/static/wechat/html/getTask.html?id="+id;
                 }
                 else
                 {
-                    window.location.href = htmlPath+"/static/wechat/html/master.html?id="+id;
+                    window.localStorage.setItem("role","master");
+                    window.location.href = htmlPath+"/static/wechat/html/getTask.html?id="+id;
                 }
             }
         }

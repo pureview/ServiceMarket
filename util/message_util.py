@@ -12,9 +12,11 @@ asstoken=f.read() #获取asstoken
 f.close()
 #注册成功通知
 template_zhucechenggong="lk0cr1UMS2S8dbQhNVjJVS7-jmmwliY2QUcNX8Oes2Y"
-template_tixianchenggong="-ZOSlwHWO51w9eoPnInTgWOSLXRzO44B7BkjVv5AexA"
-template_mission="QkhdSqOamPzWqztL2SEbwWf2nK5mfet0mHEjQ5grpS4"
-
+template_tixianchenggong="SyGbjc8pdi5ztIR7zgCfyaaxuY0jsp9Ou7n6ezOqyuw"
+template_mission="bsgx4w4kMiQLIP91RFic-k5eMEyZPp0lKxZkMLj7l78"
+template_upgrade="kjJIAqOOKcszyqGfzw1Y8kxlj1AQLUNGTqRUr49uSm8"
+template_check_fail="vcbHE5Wgw-H8QY3vBREg36E3fOawJ2dhC2xB6_DC1gY"
+template_commission="c_U0oGBgmyhernPk-8vUW7pajOMIwC0c74jyLOatG-Q"
 apiurl="https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+asstoken
 
 def push_register_success(openid,usr_id,sign_time):
@@ -61,7 +63,7 @@ def push_cash_success(openid,money,tixian_time):   #三个参数，openid 用户
                        "color":"#173177"
                    },
                    "remark": {
-                        "value":"现金红包已发放，请点击\"服务通知\"，到聚分云领取红包",
+                        "value":"现金红包已发放",
                         "color":"#173177"
                    }
            }
@@ -77,7 +79,7 @@ def push_take_order(openid,mission_id,mission_time,misson_url):  #参数分别�
            "url":misson_url,
            "data":{
                    "first": {
-                       "value":"任务领取成功",
+                       "value":"任务领取成功，点击进入继续任务",
                        "color":"#173177"
                    },
                    "keyword1":{
@@ -119,6 +121,147 @@ def send_sms_code(phone,code):
     print(result)
     return 0
 
+def push_cando_mission(openid,current_time):  #通知某人可以进行下一次任务了
+    js= {
+           "touser":openid,
+           "template_id":template_mission,
+           "data":{
+                   "first": {
+                       "value":"经系统检测，您的账号满足做单条件，请您及时做单哦，么么哒",
+                       "color":"#173177"
+                   },
+                   "keyword1":{
+                       "value":"允许下一次任务",
+                       "color":"#173177"
+                   },
+                   "keyword2": {
+                       "value":current_time,
+                       "color":"#173177"
+                   },
+                   "remark": {
+                        "value":"请进入工作平台完成下一次任务",
+                        "color":"#173177"
+                   }
+           }
+       }    
+    response=requests.post(apiurl,data=json.dumps(js))
+    print(response.text)   
+    
+def push_upgrade(openid):    #徒弟升级为师傅通知
+    js= ({
+           "touser":openid,
+           "template_id":template_upgrade,
+           "data":{
+                   "first": {
+                       "value":"恭喜升级",
+                       "color":"#173177"
+                   },
+                   "keyword1":{
+                       "value":"升级为师傅",
+                       "color":"#173177"
+                   },
+                   "keyword2": {
+                       "value":"通过",
+                       "color":"#173177"
+                   },
+                   "remark": {
+                        "value":"恭喜升级",
+                        "color":"#173177"
+                   }
+           }
+       })
+    response=requests.post(apiurl,data=json.dumps(js))
+    print(response.text)    
+
+def push_check_fail(openid,current_time):  #审核失败通知
+    js= {
+           "touser":openid,
+           "template_id":template_check_fail,
+           "data":{
+                   "first": {
+                       "value":"任务审核失败",
+                       "color":"#173177"
+                   },
+                   "keyword1":{
+                       "value":"失败",
+                       "color":"#173177"
+                   },
+                   "keyword2": {
+                       "value":current_time,
+                       "color":"#173177"
+                   },
+                   "remark": {
+                        "value":"请联系售后客服",
+                        "color":"#173177"
+                   }
+                   
+                   
+           }
+       }    
+    response=requests.post(apiurl,data=json.dumps(js))
+    print(response.text)   
+
+def push_getmoney_fromstudent(openid,money,current_time):   #三个参数 师傅收到徒弟每笔交易分成佣金的通知
+    js= {
+           "touser":openid,
+           "template_id":template_commission,
+           "data":{
+                   "first": {
+                       "value":"收到来自徒弟的交易分成",
+                       "color":"#173177"
+                   },
+                   "keyword1":{
+                       "value":money,
+                       "color":"#173177"
+                   },
+                   "keyword2": {
+                       "value":current_time,
+                       "color":"#173177"
+                   },
+                   "remark": {
+                        "value":"这是来自徒弟分成的佣金",
+                        "color":"#173177"
+                   }
+                   
+                   
+           }
+       }    
+
+    response=requests.post(apiurl,data=json.dumps(js))
+    print(response.text) 
+
+def push_check_success(openid,current_time):  #任务审核成功，请前往后台提现
+    js= {
+           "touser":openid,
+           "template_id":template_mission,
+           "data":{
+                   "first": {
+                       "value":"任务审核成功",
+                       "color":"#173177"
+                   },
+                   "keyword1":{
+                       "value":"通过",
+                       "color":"#173177"
+                   },
+                   "keyword2": {
+                       "value":current_time,
+                       "color":"#173177"
+                   },
+                   "remark": {
+                        "value":"请前往后台提现",
+                        "color":"#173177"
+                   }
+                   
+                   
+           }
+       }    
+    response=requests.post(apiurl,data=json.dumps(js))
+    print(response.text)       
+
+
 if __name__=='__main__':
-    send_sms_code('17888835311','7980')
+    #push_upgrade('ot0Np0wsM94zW5wa83HpEZhletIM')
+    push_take_order('ot0Np0wsM94zW5wa83HpEZhletIM','13','今天','')
+    #push_cash_success('ot0Np0wsM94zW5wa83HpEZhletIM','1','今天')
+    #send_sms_code('17888835311','7980')
     #push_lingqurenwu('oWN6l065lkCa_LbJNlvksAarzYP0','aa','2018 6 11 16:33','www.qq.com')

@@ -35,7 +35,7 @@
         <div style="margin-bottom: 20px">
             <div><span style="color: red;">(必填)</span>请上传商品首页：</div>
             <input id="images" type="file" accept="image/*" onchange="showImg()">
-            <img id="img" style="width:30rem;display:block">
+            <img id="img" style="width:400px;display:block">
         </div>
         <div style="margin-bottom: 20px">
             <div><span style="color: red;">(必填)</span>商品全名：<span style="color: red;">*仅平台可见，用户不可见</span></div>
@@ -48,9 +48,24 @@
             </div>
         </div>
         <div style="margin-bottom: 20px">
-            <div>价格区间：</div>
-            <input id="price1" class="easyui-textbox" style="width:24%;height:32px" >~
-            <input id="price2" class="easyui-textbox" style="width:24%;height:32px" >
+            <input type="checkbox" id="priceCheck" style="display: inline;">
+            <div style="display: inline;">价格区间：</div>
+            <input id="price1" class="easyui-textbox" style="width:10%;height:32px" >~
+            <input id="price2" class="easyui-textbox" style="width:10%;height:32px" >
+        </div>
+        <div style="margin-bottom: 20px">
+            <input type="checkbox" id="payCheck" style="display: inline;">
+            <div style="display: inline;">货到付款</div>
+        </div>
+        <div style="margin-bottom: 20px">
+            <input type="checkbox" id="placeCheck" style="display: inline;">
+            <div style="display: inline;">发货地：</div>
+            <input id="place" class="easyui-textbox" style="width:50%;height:32px" >
+        </div>
+        <div style="margin-bottom: 20px">
+            <input type="checkbox" id="otherCheck" style="display: inline;">
+            <div style="display: inline;">其他：</div>
+            <input id="other" class="easyui-textbox" style="width:50%;height:32px" >
         </div>
         <div style="margin-bottom: 20px">
             <div><span style="color: red;">(必填)</span>具体商品金额：<span style="color: red;">*仅平台可见，用户不可见</span></div>
@@ -92,7 +107,6 @@
         <div style="text-align: center;margin-bottom: 20px">
             <button class="myButton" onclick="setupTask()">发布任务</button>
         </div>
-    </div>
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>

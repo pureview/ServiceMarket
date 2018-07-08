@@ -25,14 +25,14 @@ $(function(){
                 align: 'center'
             },
             {
-                field: 'master_money',
-                title: '师父佣金',
+                field: 'slave_money',
+                title: '基本佣金',
                 width: '20%',
                 align: 'center'
             },
             {
-                field: 'slave_money',
-                title: '徒弟佣金',
+                field: 'master_money',
+                title: '提成佣金',
                 width: '20%',
                 align: 'center'
             }]

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <link rel="stylesheet" type="text/css" href="../style/base.css">
+    <title>任务列表</title>
+    <style>
+        select{
+            border: 1px solid #ccc;
+            padding: 5px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!--<select id="select" onchange="">-->
+    <!--<option value="-1" selected>全部</option>-->
+    <!--<option value="0">任务中</option>-->
+    <!--<option value="1">任务提交</option>-->
+    <!--<option value="2">审核成功</option>-->
+    <!--<option value="3">审核失败</option>-->
+    <!--<option value="4">超时</option>-->
+    <!--</select>-->
+    <div class="weui-cells" id="list">
+        <!--<div class="weui-cell weui-cell_access">-->
+        <!--<div class="weui-cell__bd">-->
+        <!--<div><span style="vertical-align: middle">店铺名称：</span><span></span></div>-->
+        <!--<div><span style="vertical-align: middle">商品名称：</span><span></span></div>-->
+        <!--<div><span style="vertical-align: middle">商品价格：</span><span></span></div>-->
+        <!--<div><span style="vertical-align: middle">关键字：</span><span></span></div>-->
+        <!--<div><span style="vertical-align: middle; color:#999">任务状态：</span><span></span></div>-->
+        <!--</div>-->
+        <!--</div>-->
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    var role = window.localStorage.getItem("role");
+    if(role == "slave") $("#manage").css("display","none");
+//    var signal = getQueryString("signal");
+    getTaskList();
+    function getTaskList()
+    {
+        var data = {};
+        data["code"] = "44";
+        data["wechat_id"] = window.localStorage.getItem("openID");
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == "0")
+                {
+                    var list = res.data;
+                    for(var i=0;i<list.length;i++)
+                    {
+                        if(list[i].status == "已接单")
+                        {
+                            var html = $('<div class="weui-cell weui-cell_access" onclick="window.location.href=\'taskDetail.html?id='+list[i].id+'\'">'+
+                                    '<div class="weui-cell__bd">'+
+                                    '<div><span style="vertical-align: middle">商品名称：</span><span>'+list[i].good_name+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">关键字：</span><span>'+list[i].keyword+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">旺旺号：</span><span>'+list[i].wangwang+'</span></div>'+
+                                    '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+list[i].status+'</span></div>'+
+                                    '</div>'+
+                                    '</div>');
+                            $("#list").append(html);
+                        }
+                        else
+                        {
+                            var html = $('<div class="weui-cell weui-cell_access" onclick="window.location.href=\'taskDetail.html?id='+list[i].id+'&see=1\'">'+
+                                    '<div class="weui-cell__bd">'+
+                                    '<div><span style="vertical-align: middle">商品名称：</span><span>'+list[i].good_name+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">关键字：</span><span>'+list[i].keyword+'</span></div>'+
+                                    '<div><span style="vertical-align: middle">旺旺号：</span><span>'+list[i].wangwang+'</span></div>'+
+                                    '<div><span style="vertical-align: middle; color:#999">任务状态：</span><span style="color:red">'+list[i].status+'</span></div>'+
+                                    '</div>'+
+                                    '</div>');
+                            $("#list").append(html);
+                        }
+                    }
+
+                }
+            }
+        });
+    }
+</script>
+</html>

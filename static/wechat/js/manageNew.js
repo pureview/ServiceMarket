@@ -8,6 +8,7 @@ $(function(){
         pagination : true,
         fitColumns:true,
         singleSelect:false,
+        onClickCell: onClickCell,
         pageList : [ 20 ],
         pageSize : 20,
         idField : 'id',
@@ -34,11 +35,6 @@ $(function(){
                 formatter: function(value,row,index){
                     return '<a onclick="openImgWindow(\''+row.images+'\')">交易图片</a>';
                 }
-            },
-            {
-                field: 'intent_role',
-                title: '身份',
-                align: 'center'
             },
             {
                 field: 'role',
@@ -80,7 +76,6 @@ function getNewList(pageNum)
     var data = {};
     data["code"] = 24;
     data["page"] = pageNum;
-    data["new_person"] = 1;
     data["seller_username"] = window.localStorage.getItem("username");
     $.ajax({
         url: url,
@@ -162,13 +157,9 @@ function disagree(username)
 function openImgWindow(img)
 {
     $("#newImg").window('open');
-    $("#img").html("");
     img = img.split(" ");
-    for(var i=0;i<img.length;i++)
-    {
-        var html = $('<img style="width: 100%;" src="'+htmlPath+'/'+img[i]+'">');
-        $("#img").append(html);
-    }
+    console.log(img);
+    //$("#img").attr("src",htmlPath+"/"+img);
 }
 
 function newToMaster(id)

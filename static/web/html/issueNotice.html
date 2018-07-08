@@ -21,41 +21,76 @@
 </head>
 <body>
     <div class="center" style="margin-top: 50px">
-        <textarea id="textarea" placeholder="请输入公告信息" value="" style="width:500px;height:250px;resize: none;padding: 10px;border-radius: 10px"></textarea>
+        <textarea id="textarea" placeholder="请输入公告信息" value="" style="width:500px;height:200px;resize: none;padding: 10px;border-radius: 10px"></textarea>
     </div>
     <div class="center" style="margin-top: 30px">
         <button class="myButton" onclick="issueNotice()">发布公告</button>
+    </div>
+
+    <div class="center" style="margin-top: 50px">
+        <textarea id="tip" placeholder="请输入邀请页图片上传注释" value="" style="width:500px;height:200px;resize: none;padding: 10px;border-radius: 10px"></textarea>
+    </div>
+    <div class="center" style="margin-top: 30px">
+        <button class="myButton" onclick="pictureTip()">发布注释</button>
     </div>
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <script>
-function issueNotice()
-{
-    var data ={};
-    data["code"]="33";
-    data["op"] = "1";
-    data["seller_username"] = window.localStorage.getItem("username");
-    data["notice"] = $("#textarea").val();
-    console.log(data);
-    $.ajax({
-        url: url,
-        type: 'post',
-        data: data,
-        success: function(res){
-            res = JSON.parse(res);
-            console.log(res);
-            if(res.code == 0)
-            {
-                alert("发布成功");
-                $("#textarea").val("");
+    $("#textarea").val(window.localStorage.getItem("issueNotice"));
+    $("#tip").val(window.localStorage.getItem("pictureTip"));
+    function issueNotice()
+    {
+        var data ={};
+        data["code"]="33";
+        data["op"] = "1";
+        data["seller_username"] = window.localStorage.getItem("username");
+        data["notice"] = $("#textarea").val();
+        console.log(data);
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == 0)
+                {
+                    alert("发布成功");
+                    window.localStorage.setItem("issueNotice",$("#textarea").val());
+                }
+                else{
+                    alert("发布失败");
+                }
             }
-            else{
-                alert("发布失败");
+        })
+    }
+
+    function pictureTip()
+    {
+        var data ={};
+        data["code"]="45";
+        data["seller_username"] = window.localStorage.getItem("username");
+        data["user_comment"] = $("#tip").val();
+        console.log(data);
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == 0)
+                {
+                    alert("发布成功");
+                    window.localStorage.setItem("pictureTip",$("#tip").val());
+                }
+                else{
+                    alert("发布失败");
+                }
             }
-        }
-    })
-}
+        })
+    }
 </script>
 </html>

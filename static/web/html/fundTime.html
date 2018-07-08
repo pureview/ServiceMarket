@@ -39,14 +39,12 @@
 <script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <script>
+    $("#start_time").val(window.localStorage.getItem("start_time"));
+    $("#end_time").val(window.localStorage.getItem("end_time"));
     function confirmTime()
     {
         var start_time = $("#start_time").val();
         var end_time = $("#end_time").val();
-//        start_time = start_time.split(" ")[1].split(":");
-//        end_time = end_time.split(" ")[1].split(":");
-//        var s_time = start_time[0]+":"+start_time[1];
-//        var e_time = end_time[0]+":"+end_time[1];
         var data = {};
         data["code"] = "31";
         data["begin_time"] = start_time;
@@ -64,8 +62,8 @@
                 if(res.code == "0")
                 {
                     alert("设置成功");
-                    $("#start_time").timespinner("setValue","");
-                    $("#end_time").timespinner("setValue","");
+                    window.localStorage.setItem("start_time",start_time);
+                    window.localStorage.setItem("end_time",end_time);
                 }
                 else
                 {

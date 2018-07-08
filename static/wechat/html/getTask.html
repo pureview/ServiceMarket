@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <link rel="stylesheet" type="text/css" href="../style/base.css">
+    <title>首页</title>
+    <style>
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="tips">
+        <div style="text-align: center"><p style="font-size: 1.3rem">公告</p></div>
+        <span id="tips">测试测试测试</span>
+    </div>
+    <div style="text-align: center">
+        <button id="getTask" onclick="getTask()" class="weui-btn weui-btn_primary" style="border-radius: 50%; width: 10rem; height: 10rem;margin-top: 120px;">申请任务</button>
+        <p id="tip" style="color: #999;margin-top: 50px;">点击申请任务</p>
+    </div>
+
+    <div id="footer">
+        <div onclick="window.location.href='getTask.html'">
+            <img src="../image/home_click.png">
+            <p style="color: #ec8764;">首页</p>
+        </div>
+        <div onclick="window.location.href='taskList.html'">
+            <img src="../image/mine.png">
+            <p>任务进度</p>
+        </div>
+        <div id="manage" onclick="window.location.href='manage.html'">
+            <img src="../image/mine.png">
+            <p>徒弟管理</p>
+        </div>
+        <div onclick="window.location.href='mine.html'">
+            <img src="../image/task.png">
+            <p>我的</p>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    history.pushState(null, null, document.URL);
+    window.addEventListener('popstate', function () {
+        history.pushState(null, null, document.URL);
+    });
+    var role = window.localStorage.getItem("role");
+    if(role == "slave") $("#manage").css("display","none");
+
+    getTips();
+    refresh();
+    function getTask()
+    {
+        window.location.href = htmlPath + "/static/wechat/html/taskDetail.html";
+    }
+</script>
+</html>

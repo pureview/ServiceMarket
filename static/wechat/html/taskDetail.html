@@ -7,9 +7,7 @@
     <title>任务申请</title>
     <style>
         .flex{
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding-left: 20px;
         }
         input{
             border: 1px solid #ccc;
@@ -34,6 +32,20 @@
     </style>
 </head>
 <body>
+<div id="load" style="display:none" class="weui-loadmore">
+    <i class="weui-loading" style="margin-top:50%"></i>
+    <span class="weui-loadmore__tips" style="margin-top:50%;font-size:1rem">正在提交</span>
+</div>
+<div class="js_dialog" id="iosDialog1" style="display: none">
+    <div class="weui-mask"></div>
+    <div class="weui-dialog">
+        <div class="weui-dialog__bd">请确保订单付款后再进行提交</div>
+        <div class="weui-dialog__ft">
+            <a class="weui-dialog__btn weui-dialog__btn_primary" onclick="uploadTask()">确定</a>
+            <a class="weui-dialog__btn weui-dialog__btn_default" onclick="closeModal()">取消</a>
+        </div>
+    </div>
+</div>
 <div id="tip"></div>
 <div class="container" id="task">
     <div class="time">
@@ -42,20 +54,26 @@
     <input type="hidden" id="user_order_id">
     <div style="text-align: center;padding: 2.5rem 0 10px 0">
         <div><span >商品首页</span></div>
-        <img id="img" style="width: 80%;" onclick="previewImg()">
+        <img id="img" style="width: 200px;">
     </div>
     <div class="flex">
         <span style="color: #000;font-size: 1.2rem">任务流程:</span>
+    </div>
+    <div class="flex">
+        <span style="color: #000;font-size: 1.2rem">1.打开淘宝客户端，按照以下流程操作：</span>
     </div>
     <div class="flex">
         <span>关键字:</span>
         <span id="keyword" style="color: #e64340;"></span>
     </div>
     <div class="flex">
+        <span style="color: #000;font-size: 1.2rem">2.筛选条件:</span>
+    </div>
+    <div class="flex">
         <span >商品数量:</span>
         <span id="good_num" style="color: #e64340;"></span>
     </div>
-    <div class="flex">
+    <div class="flex good_price" style="display: none;">
         <span>商品价格区间:</span>
         <span id="good_price" style="color: #e64340;"></span>
     </div>
@@ -63,36 +81,46 @@
         <span>排序方式:</span>
         <span id="sort" style="color: #e64340;"></span>
     </div>
-    <div class="flex" style="margin-top: 10px">
-        <span style="font-size: 1.2rem;color: #000;">请输入店铺名称</span>
+    <div class="flex good_place" style="display: none;">
+        <span>发货地:</span>
+        <span id="good_place" style="color: #e64340;"></span>
+    </div>
+    <div class="flex extra" style="display: none;">
+        <span>其他:</span>
+        <span id="extra" style="color: #e64340;"></span>
     </div>
     <div class="flex">
-        <input type="hidden" id="shop" >
-        <input type="text" id="userShop" onchange='shopInput()'>
-        <span id="shopTip" style="font-weight: bolder">验证</span>
+        <span id="cash_on_delivery" style="color: #e64340;"></span>
     </div>
-    <div class="flex" style="margin-top: 10px">
-        <span style="font-size: 1.2rem;color: #000;">请输入价格</span>
+    <div id="see">
+        <div class="flex" style="margin-top: 10px">
+            <span style="font-size: 1.2rem;color: #000;">3.请输入店铺名称，验证店铺：</span>
+        </div>
+        <div class="flex">
+            <input type="hidden" id="shop" >
+            <input type="text" id="userShop" onchange='shopInput()'>
+            <span id="shopTip" style="font-weight: bolder">验证</span>
+        </div>
+        <div class="flex" style="margin-top: 10px">
+            <span style="font-size: 1.2rem;color: #000;">4.请输入价格，验证金额：</span>
+        </div>
+        <div class="flex">
+            <input type="hidden" id="price">
+            <input type="text" id="userPrice" onchange='priceInput()'>
+            <span id="priceTip" style="font-weight: bolder">验证</span>
+        </div>
+        <div class="flex" style="margin-top: 10px">
+            <span style="font-size: 1.2rem;color: #000;">5.请输入淘宝订单号</span>
+        </div>
+        <div class="flex">
+            <input type="text" id="order_id">
+        </div>
     </div>
-    <div class="flex">
-        <input type="hidden" id="price">
-        <input type="text" id="userPrice" onchange='priceInput()'>
-        <span id="priceTip" style="font-weight: bolder">验证</span>
+    <div id="timer" style="display: none;text-align: center; margin-top: 20px">验证通过，请在淘宝页面浏览3分钟；
+        <!--<div>剩余时间<span id="LeftTime"></span></div>-->
     </div>
-    <div class="flex" style="margin-top: 10px">
-        <span style="font-size: 1.2rem;color: #000;">请输入淘宝订单号</span>
-    </div>
-    <div class="flex">
-        <input type="text" id="order_id">
-    </div>
-    <!--<div class="flex" style="margin-top: 10px">-->
-        <!--<span style="font-size: 1.2rem;color: #000;">请输入旺旺号</span>-->
-    <!--</div>-->
-    <!--<div class="flex">-->
-        <!--<input type="text" id="wangwang">-->
-    <!--</div>-->
     <div class="weui-btn-area" id="upload">
-        <a class="weui-btn weui-btn_primary" style="width:15rem; margin-top: 100px; margin-bottom: 5rem" onclick="uploadTask()" id="showTooltips">提交</a>
+        <button class="weui-btn weui-btn_primary" style="width:15rem; margin-top: 100px; margin-bottom: 5rem;" onclick="showModal()" id="showTooltips">提交</button>
     </div>
 </div>
 </body>
@@ -101,10 +129,21 @@
 <script type="text/javascript" src="../js/swiper.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <script>
+    var left_time;
     var img;
     var id = getQueryString("id");
-    var user_order_id = getQueryString("user_order_id");
-    getApprenticeTask();
+    var see = getQueryString("see");
+    if(see == 1)
+    {
+        $("#upload").css("display","none");
+        $(".time").css("display","none");
+        $("#see").css("display","none");
+        getTaskDetail();
+    }
+    else
+    {
+        getApprenticeTask();
+    }
     function getApprenticeTask()
     {
         var data = {};
@@ -112,9 +151,7 @@
         data["wechat_id"] = window.localStorage.getItem("openID");
         data["seller_username"] = window.localStorage.getItem("seller_username");
         if(id != null)
-            data["mission_id"] = id;
-        if(user_order_id != null)
-            data["user_order_id"] = user_order_id;
+            data["user_order_id"] = id;
         console.log(data);
         $.ajax({
             url: url,
@@ -129,16 +166,37 @@
                     $("#tip").css("display","none");
                     var taskData = res.data;
                     img = htmlPath+"/"+taskData.task_image;
-                    var time = (taskData.time_left).toFixed(2);
+                    var time = parseInt((taskData.time_left).toFixed(0));
                     $("#img").attr("src",img);
                     $("#good_num").text(taskData.good_num);
-                    $("#good_price").text(taskData.price_lower+"-"+taskData.price_higher);
+                    if(taskData.price_lower != "" && taskData.price_higher !="")
+                    {
+                        $(".good_price").css("display","inline");
+                        $("#good_price").text(taskData.price_lower+"-"+taskData.price_higher);
+                    }
+                    if(taskData.cash_on_delivery == 1)
+                    {
+                        $("#cash_on_delivery").text("货到付款");
+                    }
+                    if(taskData.good_place != "")
+                    {
+                        $(".good_place").css("display","inline");
+                        $("#good_place").text(taskData.good_place);
+                    }
+                    if(taskData.extra != "")
+                    {
+                        $(".extra").css("display","inline");
+                        $("#extra").text(taskData.extra);
+                    }
                     $("#keyword").text(taskData.keyword);
                     $("#sort").text(taskData.sort);
                     $("#price").text(taskData.good_price);
                     $("#shop").text(taskData.shop);
                     $("#user_order_id").val(taskData.user_order_id);
-                    $("#left_time").text(time+"秒");
+                    var now = new Date();
+                    var endTime = new Date(now.setTime(now.getTime()+time*1000));
+                    window.localStorage.setItem("left_time",endTime);
+                    leftTime();
 
                 }
                 else if(res.code == "255")
@@ -149,16 +207,67 @@
             }
         });
     }
+
+    function getTaskDetail()
+    {
+        var data = {};
+        data["code"] = 48;
+        data["user_order_id"] = id;
+        $.ajax({
+            url: url,
+            type: 'post',
+            data: data,
+            success: function(res){
+                res = JSON.parse(res);
+                console.log(res);
+                if(res.code == "0")
+                {
+                    var taskData = res.data;
+                    img = htmlPath+"/"+taskData.task_image;
+                    $("#img").attr("src",img);
+                    $("#good_num").text(taskData.good_num);
+                    if(taskData.price_lower != "" && taskData.price_higher !="")
+                    {
+                        $(".good_price").css("display","inline");
+                        $("#good_price").text(taskData.price_lower+"-"+taskData.price_higher);
+                    }
+                    if(taskData.cash_on_delivery == 1)
+                    {
+                        $("#cash_on_delivery").text("货到付款");
+                    }
+                    if(taskData.good_place != "")
+                    {
+                        $(".good_place").css("display","inline");
+                        $("#good_place").text(taskData.good_place);
+                    }
+                    if(taskData.extra != "")
+                    {
+                        $(".extra").css("display","inline");
+                        $("#extra").text(taskData.extra);
+                    }
+                    $("#keyword").text(taskData.keyword);
+                    $("#sort").text(taskData.sort);
+                    $("#price").text(taskData.good_price);
+                    $("#shop").text(taskData.shop);
+                    $("#user_order_id").val(taskData.user_order_id);
+                }
+            }
+        })
+    }
+
+    function showModal()
+    {
+        $("#iosDialog1").css("display","block");
+    }
+    function closeModal()
+    {
+        $("#iosDialog1").css("display","none");
+    }
+
     function uploadTask()
     {
         if(confirm == true && confirmPrice == true && $("#order_id").val() !="")
         {
-
-            //var wangwang = $("#wangwang").val();
-            //if(wangwang != "")
-            //{
-            //  data["wangwang"] = wangwang;
-            //}
             var data = {};
             data["code"] = "9";
             data["wechat_id"] = window.localStorage.getItem("openID");
@@ -175,11 +284,13 @@
                     console.log(res);
                     if(res.code == "0")
                     {
-                        alert("提交成功");
-                        window.location.href = "taskList.html";
+                        $("#iosDialog1").css("display","none");
+                        $("#load").css("display","block");
+                        window.location.href = htmlPath + "/static/wechat/html/taskList.html";
                     }
                     else
                     {
+                        $("#iosDialog1").css("display","none");
                         alert(res.message);
                     }
                 },
@@ -212,6 +323,11 @@
                 $("#shopTip").text("通过");
                 $("#shopTip").css("color","green");
                 confirm = true;
+                if(confirmPrice == true)
+                {
+                    $("#timer").css("display","block");
+                    //setTimeout(buttonDisplay,180000);
+                }
             }
             else
             {
@@ -238,6 +354,15 @@
                 $("#priceTip").text("通过");
                 $("#priceTip").css("color","green");
                 confirmPrice=true;
+                if(confirm == true)
+                {
+                    $("#timer").css("display","block");
+                    //setTimeout(buttonDisplay,180000);
+//                    var now = new Date();
+//                    var endTime = new Date(now.setTime(now.getTime()+180*1000));
+//                    window.localStorage.setItem("endTime",endTime);
+//                    FreshTime();
+                }
             }
             else
             {
@@ -248,12 +373,45 @@
         }
     }
 
-    //预览图片
-    function previewImg()
+    function buttonDisplay()
     {
-//        weui.gallery(img);
-//        $('.weui-gallery__del').remove();
-//        $('.weui-gallery span').html('');
+        $("#timer").css("display","none");
+        $("#showTooltips").css("background","");
+        $("#showTooltips").attr("disabled",false);
+    }
+//    function FreshTime() {
+//        $("#timer").css("display","block");
+//        var nowtime = new Date();//当前时间
+//        var endtime = new Date(window.localStorage.getItem("endTime"));//结束时间
+//        var lefttime = parseInt((endtime.getTime() - nowtime.getTime()) / 1000); // 剩余时间
+//        var m = parseInt((lefttime / 60) % 60); // 剩余分钟数
+//        var s = parseInt(lefttime % 60);    // 剩余秒数
+//
+//        document.getElementById("LeftTime").innerHTML = m + "分" + s + "秒";
+//        var sh = setInterval(FreshTime, 1000); // 每秒钟执行一次
+//
+//        if (lefttime <= 0) {
+//            clearInterval(sh);
+//            $("#timer").css("display","none");
+//            $("#showTooltips").css("background","");
+//            $("#showTooltips").attr("disabled",false);
+//        }
+//    }
+
+    function leftTime() {
+        var nowtime = new Date();//当前时间
+        var endtime = new Date(window.localStorage.getItem("left_time"));//结束时间
+        var lefttime = parseInt((endtime.getTime() - nowtime.getTime()) / 1000); // 剩余时间
+        var m = parseInt((lefttime / 60) % 60); // 剩余分钟数
+        var s = parseInt(lefttime % 60);    // 剩余秒数
+
+        document.getElementById("left_time").innerHTML = m + "分" + s + "秒";
+        var ti = setTimeout(leftTime, 1000);
+
+        if (lefttime <= 0) {
+            clearTimeout(ti);
+            document.getElementById("left_time").innerHTML = "0";
+        }
     }
 </script>
 </html>

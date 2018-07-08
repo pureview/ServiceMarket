@@ -34,6 +34,18 @@ function show(f) {
     }
     $("#uploadImg").css("display","none");
 }
+function show1(f) {
+    var str = "";
+    for (var i = 0; i < f.length; i++) {
+        var reader = new FileReader();
+        reader.readAsDataURL(f[i]);
+        reader.onload = function (e) {
+            str += "<img width='70' height='70' id='img' src='" + e.target.result + "'/>";
+            $("#img1")[0].outerHTML = str;
+        }
+    }
+    $("#uploadImg1").css("display","none");
+}
 
 function getTips()
 {
@@ -74,22 +86,70 @@ function refresh()
             console.log(res);
             if(res.code == "0")
             {
-                var missions = res.missions;
-                for(var i=0;i<missions.length;i++)
-                {
-                    var html = $('<div style="margin: 10px"><span id="msg" style="color:red" onclick="toTaskDetail(\''+missions[i].id+'\')">您获取一个任务，请“点我”进行任务</span></div>');
-                    $("#msg").append(html);
-                }
-                $("#refresh").attr("disabled","disabled");
-                $("#refresh").attr("style","background-color:grey");
+                $("#tip").text(res.message);
+            }else if(res.code == "1")
+            {
+                var now = new Date();
+                var time = res.waiting_time.toFixed(0);
+                var endTime = new Date(now.setTime(now.getTime()+time*1000));
+                window.localStorage.setItem("left_time",endTime);
+                leftTime();
+                //var time = formatSeconds(res.waiting_time);
+                //$("#tip").text("距离下个任务还有"+time);
+
+                $("#getTask").css("background","#ccc");
+                $("#getTask").attr("disabled","disabled");
             }
-            else
-            {   var html = $('<div style="margin: 10px"<span id="msg" style="color:red">'+res.message+'</span></div>');
-                $("#msg").append(html);
-                $("#refresh").removeAttr("disabled");
+            else if(res.code=="3"){
+                $("#tip").text(res.message);
+            }
+
+            else{
+                $("#tip").text(res.message);
+                $("#getTask").css("background","#ccc");
+                $("#getTask").attr("disabled","disabled");
             }
         }
     });
+}
+
+function leftTime() {
+    var nowtime = new Date();//当前时间
+    var endtime = new Date(window.localStorage.getItem("left_time"));//结束时间
+    var lefttime = parseInt((endtime.getTime() - nowtime.getTime()) / 1000); // 剩余时间
+    var h = parseInt((lefttime/ 60 / 60) % 60);
+    var m = parseInt((lefttime / 60) % 60); // 剩余分钟数
+    var s = parseInt(lefttime % 60);    // 剩余秒数
+
+    document.getElementById("tip").innerHTML ="距离下一个任务还有" + h + "小时" + m + "分" + s + "秒";
+    var ti = setTimeout(leftTime, 1000);
+
+    if (lefttime <= 0) {
+        clearTimeout(ti);
+    }
+}
+
+//转换时间
+function formatSeconds(value) {
+    var theTime = parseInt(value);// 秒
+    var theTime1 = 0;// 分
+    var theTime2 = 0;// 小时
+    if(theTime > 60) {
+        theTime1 = parseInt(theTime/60);
+        theTime = parseInt(theTime%60);
+        if(theTime1 > 60) {
+            theTime2 = parseInt(theTime1/60);
+            theTime1 = parseInt(theTime1%60);
+        }
+    }
+    var result = ""+parseInt(theTime)+"秒";
+    if(theTime1 > 0) {
+        result = ""+parseInt(theTime1)+"分"+result;
+    }
+    if(theTime2 > 0) {
+        result = ""+parseInt(theTime2)+"小时"+result;
+    }
+    return result;
 }
 function toTaskDetail(id)
 {

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../style/weui.min.css">
+    <link rel="stylesheet" type="text/css" href="../style/base.css">
+    <title>徒弟管理</title>
+    <style>
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div style="text-align: center">
+        <button onclick='window.location.href="newList.html"' class="weui-btn weui-btn_primary" style="border-radius: 50%; width: 10rem; height: 10rem;margin-top: 120px;">新人审核</button>
+    </div>
+
+    <div style="text-align: center">
+        <button onclick='window.location.href="contribute.html"' class="weui-btn weui-btn_primary" style="border-radius: 50%; width: 10rem; height: 10rem;margin-top: 120px;">徒弟贡献</button>
+    </div>
+
+    <div id="footer">
+        <div onclick="window.location.href='getTask.html'">
+            <img src="../image/home.png">
+            <p>首页</p>
+        </div>
+        <div onclick="window.location.href='taskList.html'">
+            <img src="../image/mine.png">
+            <p>任务进度</p>
+        </div>
+        <div id="manage" onclick="window.location.href='manage.html'">
+            <img src="../image/mine_click.png">
+            <p style="color: #CA7C51">徒弟管理</p>
+        </div>
+        <div onclick="window.location.href='mine.html'">
+            <img src="../image/task.png">
+            <p>我的</p>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+    var role = window.localStorage.getItem("role");
+    if(role == "slave") $("#manage").css("display","none");
+</script>
+</html>

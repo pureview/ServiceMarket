@@ -23,7 +23,7 @@
 </div>
 <div class="container">
         <div class="weui-cells weui-cells_form" style="margin-top:0">
-            <div class="weui-cell" >
+            <div class="weui-cell" style="font-size: 1rem;color: #999;">
                 注册上传图片将会消耗大量时间，请耐心等待几分钟
             </div>
             <div class="weui-cell">
@@ -36,7 +36,7 @@
             </div>
             <div class="weui-cell">
                 <div class="weui-cells_hd">
-                    <label class="weui-label">旺旺号</label>
+                    <label class="weui-label">*旺旺号</label>
                 </div>
                 <div class="weui-cells_bd">
                     <input id="wangwang" class="weui-input" type="text" placeholder="请输入旺旺号">
@@ -44,15 +44,7 @@
             </div>
             <div class="weui-cell">
                 <div class="weui-cells_hd">
-                    <label class="weui-label">手机号码</label>
-                </div>
-                <div class="weui-cells_bd">
-                    <input id="phone" class="weui-input" type="number" pattern="[0-9]*" placeholder="请输入手机号">
-                </div>
-            </div>
-            <div class="weui-cell">
-                <div class="weui-cells_hd">
-                    <label class="weui-label">年龄</label>
+                    <label class="weui-label">*年龄</label>
                 </div>
                 <div class="weui-cells_bd">
                     <input id="age" class="weui-input" type="number" pattern="[0-9]*" placeholder="请输入年龄">
@@ -60,7 +52,7 @@
             </div>
             <div class="weui-cell" style="height:25px">
                 <div class="weui-cells_hd">
-                    <label class="weui-label">性别</label>
+                    <label class="weui-label">*性别</label>
                 </div>
                 <div class="weui-cells_bd">
                     <select id="gender" class="weui-select" name="select">
@@ -71,23 +63,53 @@
             </div>
             <div class="weui-cell" style="height:25px">
                 <div class="weui-cells_hd">
+                    <label class="weui-label">*身份</label>
+                </div>
+                <div class="weui-cells_bd">
+                    <select id="intent_role" class="weui-select" name="select">
+                        <option selected value="1">师傅</option>
+                        <option value="2">徒弟</option>
+                    </select>
+                </div>
+                <div class="weui-cells_bd"><label class="weui-label" style="width:100%;margin-left:10px">(请点击进行身份选择)</label></div>
+            </div>
+            <div class="weui-cell" style="height:25px">
+                <div class="weui-cells_hd">
                     <label class="weui-label">备注</label>
                 </div>
                 <div class="weui-cells_bd">
                     <input id="extra" type="text" style="width: 100%;padding: 5px;border: 1px solid #ccc;border-radius: 5px;">
                 </div>
             </div>
+            <!--<div class="weui-cell">-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<div class="weui-uploader">-->
+                        <!--<div class="weui-uploader__hd">-->
+                            <!--<p class="weui-uploader__title">*图片上传(请上传您“手机淘宝”里的“我的淘宝”截图)</p>-->
+                        <!--</div>-->
+                        <!--<div class="weui-uploader__bd">-->
+                            <!--<img id="img">-->
+                            <!--<div class="weui-uploader__input-box" id="uploadImg">-->
+                                <!--<input id="images" class="weui-uploader__input" type="file" accept="image/*" onchange="show(this.files)">-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
             <div class="weui-cell">
                 <div class="weui-cell__bd">
                     <div class="weui-uploader">
                         <div class="weui-uploader__hd">
-                            <p class="weui-uploader__title">图片上传(提供近期淘宝订单页截图)</p>
+                            <p class="weui-uploader__title">*图片上传</p>
+                        </div>
+                        <div class="weui-uploader__hd">
+                            <p class="weui-uploader__title" style="color:red" id="tip"></p>
                         </div>
                         <div class="weui-uploader__bd">
-                            <img id="img">
-                            <div class="weui-uploader__input-box" id="uploadImg">
-                                <input id="images" class="weui-uploader__input" type="file" accept="image/*" onchange="show(this.files)">
+                            <div class="weui-uploader__input-box" id="uploadImg1">
+                                <input id="doc" class="weui-uploader__input" type="file" multiple="multiple" accept="image/*" onchange="setImagePreviews();">
                             </div>
+                            <div id="dd" style="width:100%;"></div>
                         </div>
                     </div>
                 </div>
@@ -100,31 +122,130 @@
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
-<script type="text/javascript" src="../js/getopenID.js"></script>
 <script>
-    //getUserRole();
+    function setImagePreviews(avalue) {
+
+        var docObj = document.getElementById("doc");
+
+        var dd = document.getElementById("dd");
+
+        dd.innerHTML = "";
+
+        var fileList = docObj.files;
+        if(docObj.files.length > 5){
+            alert('最多只能添加五张图片');
+            return;
+        }else
+        {
+            for (var i = 0; i < fileList.length; i++) {
+
+
+
+                dd.innerHTML += "<div> <img id='img" + i + "'  /> </div>";
+
+                var imgObjPreview = document.getElementById("img"+i);
+
+                if (docObj.files && docObj.files[i]) {
+
+                    //火狐下，直接设img属性
+
+                    imgObjPreview.style.display = 'block';
+
+                    imgObjPreview.style.width = '100%';
+
+                    //imgObjPreview.src = docObj.files[0].getAsDataURL();
+
+                    //火狐7以上版本不能用上面的getAsDataURL()方式获取，需要一下方式
+
+                    imgObjPreview.src = window.URL.createObjectURL(docObj.files[i]);
+
+                }
+
+                else {
+
+                    //IE下，使用滤镜
+
+                    docObj.select();
+
+                    var imgSrc = document.selection.createRange().text;
+
+                    alert(imgSrc)
+
+                    var localImagId = document.getElementById("img" + i);
+
+                    //必须设置初始大小
+
+                    localImagId.style.width = "150px";
+
+                    localImagId.style.height = "180px";
+
+                    //图片异常的捕捉，防止用户修改后缀来伪造图片
+
+                    try {
+
+                        localImagId.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale)";
+
+                        localImagId.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = imgSrc;
+
+                    }
+
+                    catch (e) {
+
+                        alert("您上传的图片格式不正确，请重新选择!");
+
+                        return false;
+
+                    }
+
+                    imgObjPreview.style.display = 'none';
+
+                    document.selection.empty();
+
+                }
+            }
+        }
+        return true;
+
+    }
+
 function invite()
 {
+    var file = document.getElementById("doc").files;
     var data= new FormData();
     var gender;
+    var intent_role;
     if($('#gender').val()==1)
         gender = "女";
     else
         gender = "男";
-    if($("#inviter_id").val() == "" || $("#age").val() == "" || $("#wangwang").val() == "" || $("#wangwang").val()=="" || $("#images")[0].files[0]==undefined)
+    if($("#intent_role").val() == 1)
+        intent_role = "师傅";
+    else
+        intent_role = "徒弟";
+    if($("#age").val() == "" || $("#wangwang").val() == "" || $("#wangwang").val()=="" || $("#intent_role").val()=="" || file.length == 0)
         alert("请填写完整信息");
     else{
         $("#load").css("display","block");
         data.append("code","15");
         data.append("wechat_id",window.localStorage.getItem("openID"));
-        data.append("inviter_id",$("#inviter_id").val());
+        if($("#inviter_id").val() != "") {
+            data.append("inviter_id",$("#inviter_id").val());
+        }
         data.append("seller_username",window.localStorage.getItem("seller_username"));
+        data.append("phone",window.localStorage.getItem("phone"));
         data.append("age",$("#age").val());
         data.append("gender",gender);
         data.append("wangwang",$("#wangwang").val());
-        data.append("phone",$("#phone").val());
-        data.append("extra",$("#extra").val());
-        data.append("images",$("#images")[0].files[0]);
+        data.append("phone",window.localStorage.getItem("phone"));
+        if($("#extra").val() != "")
+        {
+            data.append("extra",$("#extra").val());
+        }
+        data.append("intent_role",intent_role);
+        for(var i=0;i<file.length;i++)
+        {
+            data.append("image"+i,file[i]);
+        }
         $.ajax({
             url : url,
             type : 'POST',
@@ -147,5 +268,24 @@ function invite()
         });
     }
 }
+    getTip();
+    function getTip()
+    {
+        var data = {};
+        data["code"] = 46;
+        data["seller_username"] = window.localStorage.getItem("seller_username");
+        $.ajax({
+            url: url,
+            type: "post",
+            data: data,
+            dataType: "json",
+            success: function(res)
+            {
+                console.log(res);
+                if(res.code == "0")
+                    $("#tip").text(res.data);
+            }
+        })
+    }
 </script>
 </html>

@@ -1,28 +1,31 @@
-#coding=utf8
-
-import httplib
 import json
+import requests
+from collections import OrderedDict
+import urllib.request
+import urllib.parse
 
 
 f = open('/home/ubuntu/taobao/static/asstoken.txt', 'r')
-asstoken=f.read() 
+asstoken=f.read() #获取asstoken
 f.close()
-
+#注册成功通知
 template_zhucechenggong="lk0cr1UMS2S8dbQhNVjJVS7-jmmwliY2QUcNX8Oes2Y"
 template_tixianchenggong="-ZOSlwHWO51w9eoPnInTgWOSLXRzO44B7BkjVv5AexA"
 template_mission="QkhdSqOamPzWqztL2SEbwWf2nK5mfet0mHEjQ5grpS4"
 
-#apiurl="https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+asstoken
-#注册成功通知
-def push_zhucechegngong(openid,usr_id,sign_time):   #三个参数，openid 用户名 和注册时间 
-    js= {
+apiurl="https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+asstoken
+
+def push_zhucechegngong(openid,usr_id,sign_time):
+    
+ 
+    js= ({
            "touser":openid,
            "template_id":template_zhucechenggong,
        
            
            "data":{
                    "first": {
-                       "value":"注册成功",
+                       "value":"conguratulation",
                        "color":"#173177"
                    },
                    "keyword1":{
@@ -34,26 +37,20 @@ def push_zhucechegngong(openid,usr_id,sign_time):   #三个参数，openid 用�
                        "color":"#173177"
                    },
                    "remark": {
-                        "value":"欢迎加入本平台",
+                        "value":"welcome",
                         "color":"#173177"
                    }
                    
                    
            }
-       }    
-    conn = httplib.HTTPConnection("api.weixin.qq.com:80")
-    headers = {"Content-type":"application/json"} #application/x-www-form-urlencoded
+       })
+
     
-    conn.request("POST", "/cgi-bin/message/template/send?access_token="+asstoken, json.JSONEncoder().encode(js), headers)
-    response = conn.getresponse()
-    data = response.read()
-    if response.status == 200:
-        print 'success'
-        print data
-    else:
-        print 'fail'
-    conn.close()
     
+    response=requests.post(apiurl,data=json.dumps(js))
+    print(response.text)
+
+
 def push_tixianchenggong(openid,money,tixian_time):   #三个参数，openid 用户名 和注册时间 
     js= {
            "touser":openid,
@@ -62,7 +59,7 @@ def push_tixianchenggong(openid,money,tixian_time):   #三个参数，openid 用
            
            "data":{
                    "first": {
-                       "value":"提现成功成功",
+                       "value":"提现成功",
                        "color":"#173177"
                    },
                    "keyword1":{
@@ -81,21 +78,11 @@ def push_tixianchenggong(openid,money,tixian_time):   #三个参数，openid 用
                    
            }
        }    
-    conn = httplib.HTTPConnection("api.weixin.qq.com:80")
-    headers = {"Content-type":"application/json"} #application/x-www-form-urlencoded
-    
-    conn.request("POST", "/cgi-bin/message/template/send?access_token="+asstoken, json.JSONEncoder().encode(js), headers)
-    response = conn.getresponse()
-    data = response.read()
-    if response.status == 200:
-        print 'success'
-        print data
-    else:
-        print 'fail'
-    conn.close()
 
+    response=requests.post(apiurl,data=json.dumps(js))
+    print(response.text)
     
-def push_lingqurenwu(openid,mission_id,mission_time,misson_url):
+def push_lingqurenwu(openid,mission_id,mission_time,misson_url):  #参数分别为任务编号，时间，任务页面的url
     js= {
            "touser":openid,
            "template_id":template_mission,
@@ -123,17 +110,11 @@ def push_lingqurenwu(openid,mission_id,mission_time,misson_url):
                    
            }
        }    
-    conn = httplib.HTTPConnection("api.weixin.qq.com:80")
-    headers = {"Content-type":"application/json"} #application/x-www-form-urlencoded
+    response=requests.post(apiurl,data=json.dumps(js))
+    print(response.text)      
     
-    conn.request("POST", "/cgi-bin/message/template/send?access_token="+asstoken, json.JSONEncoder().encode(js), headers)
-    response = conn.getresponse()
-    data = response.read()
-    if response.status == 200:
-        print 'success'
-        print data
-    else:
-        print 'fail'
-    conn.close()
-    
-push_lingqurenwu('oWN6l0-ul013P5k5dQkcAUBlR6j8','123345456','2018 6 11 16:33','www.qq.com')
+
+push_lingqurenwu('oWN6l065lkCa_LbJNlvksAarzYP0','aa','2018 6 11 16:33','www.qq.com')
+
+
+ 

@@ -166,23 +166,37 @@
     function getMoney()
     {
         var data = {};
-        data["code"] = "17";
-        data["op"] = "1";
-        data["wechat_id"] = window.localStorage.getItem("openID");
-        data["seller_username"] = window.localStorage.getItem("seller_username");
-        data["money"] = $("#money").val();
-        $.ajax({
-            url: url,
-            type: 'post',
-            data: data,
-            success: function(res){
-                res = JSON.parse(res);
-                if(res.code == "0")
-                {
-                    window.location.href = res.data;
+        var money = $("#money").val();
+        if(money == "")
+        {
+            alert("请输入提现金额");
+        }
+        else {
+            data["code"] = "17";
+            data["op"] = "1";
+            data["wechat_id"] = window.localStorage.getItem("openID");
+            data["seller_username"] = window.localStorage.getItem("seller_username");
+            data["money"] = money;
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: data,
+                success: function(res){
+                    res = JSON.parse(res);
+                    if(res.code == "0")
+                    {
+//                    window.location.href = res.data;
+                        alert("提现"+money+"元，请立即前往公众号点击领取红包");
+                        window.location.reload();
+
+                    }
+                    else
+                    {
+                        alert(res.message);
+                    }
                 }
-            }
-        })
+            })
+        }
     }
     getTime();
     getUserFund();

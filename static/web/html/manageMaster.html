@@ -9,8 +9,12 @@
 </head>
 <body>
 <table id="manageMaster_dg"></table>
-<div id="tips"><span style="color: red">*可对任务间隔和备注进行修改</span><br><span>筛选备注：</span><input id='sift_extra'/>
-        <button onclick="getMasterList()">筛选</button>
+<div id="tips">
+    <span style="color: red">*可对任务间隔和备注进行修改</span><br>
+    <span>筛选备注：</span><input id='sift_extra'/>
+    <button onclick="getMasterList()">筛选</button>
+    <div><span>批量修改任务间隔天数：</span><input id='day'/>
+    <button onclick="saveDay()">修改</button></div>
 </div>
 </body>
 <script type="text/javascript" src="../js/jquery.min.js"></script>

@@ -5,8 +5,8 @@ from collections import OrderedDict
 import urllib.request
 import urllib.parse
 
-appid="wx61e83ce648e7b691"
-appsecret="9cbcf612af5c8a37d9840c060afd5ab8"
+appid="wx1c61776edae08975"
+appsecret="15625151323fe35cccd702c5cf987e83"
 def flush_asstoken():
     apiurl="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+appsecret
     req= urllib.request.Request(apiurl)
